@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}
+Создать событие
+{% endblock title %}
+{% block content %}
+{% include 'cosmos/includes/header_template.html' %}
+<form enctype="multipart/form-data" action=" {% url 'create_event' %} " class="ml-5" method="post">
+    {% include 'cosmos/includes/forms_labels_template.html' %}
+    <button type="submit" class="btn btn-light">Создать</button>
+</form>
+{% endblock %}

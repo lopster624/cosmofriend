@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}
+Друзья
+{% endblock %}
+{% block content %}
+{% include 'cosmos/includes/header_template.html' %}
+{% include 'cosmos/includes/friends_template.html' %}
+<div class="fixed-bottom nav justify-content-end mb-3 mr-5">
+    <a href=" {% url 'add_friends' %} "> + Добавить друга </a>
+</div>
+{% endblock %}

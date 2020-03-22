@@ -1,0 +1,52 @@
+{% load static %}
+<div class="card mb-3 bg-dark w-50">
+        <div class="row no-gutters">
+            <div class="col-md-4 centered">
+                {% if friend.photo %}
+                <img class="card-img" src="{{ friend.photo.url }}">
+                {%else%}
+                <img class="card-img" src="{% static 'photo.png' %}">
+                {%endif%}
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{% url 'some_friend' friend.id%}">{{friend.name}}</a></h5>
+                    <p class="card-text">{%if f_list%}{{friend.character|truncatewords:15}}{%else%}{{friend.character}}{%endif%}</p>
+                    {% if friend.date_begin%}
+                    <p class="card-text"><small class="text-muted">Начали дружить {{friend.date_begin}}</small></p>
+                    {% endif %}
+                    {% if friend.date_birth%}
+                    <p class="card-text"><small class="text-muted">День рождения {{friend.date_birth}}</small></p>
+                    {% endif %}
+                    <form class="mb-2" action="{% url 'edit_friend' friend.id %}">
+                        <button type="submit" class="btn btn-outline-light">Редактировать</button>
+                    </form>
+                    <button type="button" class="btn btn-outline-light" data-toggle="modal"
+                            data-target="#staticBackdrop{{friend.id}}">Удалить
+                    </button>
+                </div>
+                <div class="modal fade" id="staticBackdrop{{friend.id}}" data-backdrop="static" tabindex="-1" role="dialog"
+                     aria-labelledby="staticBackdropLabel{{friend.id}}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content bg-dark">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel{{friend.id}}">Удаление друга</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Подумай еще раз. После всего, что между вами было, ты просто хочешь его удалить?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                                <form action="{% url 'delete_friend' friend.id %}">
+                                    <button type="submit" class="btn btn-danger">Удалить друга</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

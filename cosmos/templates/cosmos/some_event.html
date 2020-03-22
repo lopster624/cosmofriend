@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+{{event.title|title}}
+{% endblock %}
+{% block content %}
+{% include 'cosmos/includes/header_template.html' %}
+{% include 'cosmos/includes/event_card_template.html' %}
+{% endblock %}

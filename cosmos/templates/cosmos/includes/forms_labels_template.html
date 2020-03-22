@@ -1,0 +1,12 @@
+{% csrf_token %}
+{% for f in form %}
+<div class="w-50 form-group">
+    {{ f.label }}
+    {{ f }}
+    {% if f.errors %}
+    <div class="alert alert-danger">
+        {{ f.errors }}
+    </div>
+    {% endif %}
+</div>
+{% endfor %}

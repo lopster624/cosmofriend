@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{{block.super}} - вход
+
+{% endblock %}
+
+{% block header%}
+{% endblock header%}
+
+{% block content %}
+
+<div class="mx-auto">
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% for f in form %}
+        <div>
+            {{ f.label }}
+            {{ f }}
+        </div>
+        {% endfor %}
+        {% if form.errors %}
+        <div>
+            Пожалуйста, введите правильные имя пользователя и пароль.
+        </div>
+        {% endif %}
+        <input type="submit" value="Войти"/>
+    </form>
+    <div>
+        <a href="{% url 'register' %}">Регистрация</a>
+    </div>
+</div>
+{% endblock %}

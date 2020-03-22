@@ -1,0 +1,87 @@
+{% load static %}
+<div class="card bg-dark ml-5 mb-3 w-50">
+    <div class="card-body">
+        <a href="{% url 'some_event' event.id %}"><h5 class="card-title">{{event.title}}</h5></a>
+        <p class="card-text">{%if short%}{{event.report|truncatewords:15}}{%else%}{{event.report}}{%endif%}</p>
+        <p class="card-text">Участники:
+            {%for member in event.members.all %}
+            <a href="{% url 'some_friend' member.id%}">{{member}}</a>{%if forloop.last%}.{%else%},{%endif%}
+            {%endfor%}
+        </p>
+        {% if event.date%}
+        <p class="card-text"><small class="text-muted">{{event.date}}</small></p>
+        {%endif%}
+        {%if photos%}
+        <p class="card-text">Фотографии:</p>
+        <div id="carouselControls" class="carousel slide mb-4" data-ride="carousel">
+            <div class="carousel-inner">
+
+                {% for f in photos %}
+                {%if forloop.first%}
+                <div class="carousel-item active">
+                    {%else%}
+                    <div class="carousel-item">
+                        {%endif%}
+                        <img src="{{ f.image.url }}" class="d-block w-100">
+                    </div>
+                    {%endfor%}
+                </div>
+                <a class="carousel-control-prev" href="#carouselControls" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselControls" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
+        {%endif%}
+        {% if videos%}
+        <p class="card-text ml-3">Видеозаписи:</p>
+        <div id="player" class="mx-3"></div>
+        <script>
+        var player = new Playerjs({
+        id:"player",
+        file:[
+            {% for video in videos%}
+            {"title":"{{video.title}}","file":"{{video.video.url}}"},
+            {%endfor%}
+        ]
+        });
+        </script>
+        {% endif %}
+        <div class="form-inline mb-3 mt-3 ml-3 text-center">
+            <form class="mr-2" action="{% url 'edit_event' event.id %}">
+                <button type="submit" class="btn btn-outline-light">Редактировать</button>
+            </form>
+            <button type="button" class="btn btn-outline-light" data-toggle="modal"
+                    data-target="#staticBackdrop{{event.id}}">Удалить
+            </button>
+        </div>
+    </div>
+    <div class="modal fade" id="staticBackdrop{{event.id}}" data-backdrop="static" tabindex="-1" role="dialog"
+         aria-labelledby="staticBackdropLabel{{event.id}}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel{{event.id}}">Удаление события</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Стоп! То есть ты хочешь удалить это событие? Просто стереть все воспоминания о нем и позже
+                    забыть?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <form action="{% url 'delete_event' event.id %}">
+                        <button type="submit" class="btn btn-danger">Удалить событие</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
