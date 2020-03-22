@@ -1,5 +1,10 @@
+import os
+
+from PIL import Image
 from django.contrib.auth.models import User
 from django.db import models
+
+from engine.settings import BASE_DIR
 
 
 class Group(models.Model):
@@ -52,6 +57,11 @@ class Events(models.Model):
 class Photos(models.Model):
     image = models.ImageField(upload_to='photos/%Y/%m/%d')
     event = models.ForeignKey(Events, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        super(Photos, self).save(*args, **kwargs)
+        image = Image.open(self.image.path)
+        image.save(image.filename, quality=40, optimize=True)
 
     class Meta:
         verbose_name = "Фотография"

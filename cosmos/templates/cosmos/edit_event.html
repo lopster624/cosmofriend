@@ -6,7 +6,8 @@
 {% include 'cosmos/includes/header_template.html' %}
 <form enctype="multipart/form-data" action=" {% url 'edit_event' event.id%} " class="ml-5" method="post">
     {% include 'cosmos/includes/forms_labels_template.html' %}
-    <div class="w-50 text-center">
+    {% include 'cosmos/includes/files_template.html' %}
+    <div class="w-50 mt-4 text-center">
         <button type="submit" class="btn btn-light">Применить изменения</button>
     </div>
 </form>

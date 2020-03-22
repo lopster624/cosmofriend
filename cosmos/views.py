@@ -137,10 +137,12 @@ class CreateEvent(LoginRequiredMixin, View):
 class EditEvent(LoginRequiredMixin, View):
     def get(self, request, event_id):
         event = Events.objects.get(id=event_id)
+        photos = Photos.objects.filter(event=event_id)
+        videos = Videos.objects.filter(event=event_id)
         bound_form = CreateEventForm(instance=event, current_user=request.user)
         bound_form.fields['images'].label = "Добавить новые фотографии"
         bound_form.fields['videos'].label = "Добавить новые видео"
-        return render(request, 'cosmos/edit_event.html', context={'form': bound_form, 'event': event})
+        return render(request, 'cosmos/edit_event.html', context={'form': bound_form, 'photos': photos, 'event': event, 'videos': videos})
 
     def post(self, request, event_id):
         event = Events.objects.get(id=event_id)
