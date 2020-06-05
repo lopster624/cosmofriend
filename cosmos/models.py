@@ -25,6 +25,11 @@ class Friends(models.Model):
     photo = models.ImageField(upload_to='photos/%Y/%m/%d', blank=True, null=True)
     groups = models.ManyToManyField(Group, blank=True, related_name='peoples')
 
+    def save(self, *args, **kwargs):
+        super(Friends, self).save(*args, **kwargs)
+        image = Image.open(self.photo.path)
+        image.save(image.filename, quality=40, optimize=True)
+
     class Meta:
         ordering = ['date_begin']
 

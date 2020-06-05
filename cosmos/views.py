@@ -118,6 +118,9 @@ class CreateEvent(LoginRequiredMixin, View):
             new_event.save()
             for mem in request.POST.getlist('members'):
                 new_event.members.add(mem)
+                friend = Friends.objects.get(id=mem)
+                friend.points += 1
+                friend.save()
             new_event.save()
             if request.FILES:
                 for f in request.FILES.getlist('images'):
@@ -129,7 +132,7 @@ class CreateEvent(LoginRequiredMixin, View):
                         video.save()
                         video.title = video.video.name[18:]
                         video.save()
-            return redirect('events')
+            return redirect('some_event', new_event.id)
         else:
             return render(request, 'cosmos/create_event.html', context={'form': bound_form})
 
@@ -142,7 +145,8 @@ class EditEvent(LoginRequiredMixin, View):
         bound_form = CreateEventForm(instance=event, current_user=request.user)
         bound_form.fields['images'].label = "Добавить новые фотографии"
         bound_form.fields['videos'].label = "Добавить новые видео"
-        return render(request, 'cosmos/edit_event.html', context={'form': bound_form, 'photos': photos, 'event': event, 'videos': videos})
+        return render(request, 'cosmos/edit_event.html',
+                      context={'form': bound_form, 'photos': photos, 'event': event, 'videos': videos})
 
     def post(self, request, event_id):
         event = Events.objects.get(id=event_id)
