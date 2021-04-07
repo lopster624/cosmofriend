@@ -1,10 +1,6 @@
-import os
-
 from PIL import Image
 from django.contrib.auth.models import User
 from django.db import models
-
-from engine.settings import BASE_DIR
 
 
 class Group(models.Model):
@@ -27,8 +23,9 @@ class Friends(models.Model):
 
     def save(self, *args, **kwargs):
         super(Friends, self).save(*args, **kwargs)
-        image = Image.open(self.photo.path)
-        image.save(image.filename, quality=40, optimize=True)
+        if self.photo:
+            image = Image.open(self.photo.path)
+            image.save(image.filename, quality=40, optimize=True)
 
     class Meta:
         ordering = ['date_begin']
