@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}
+Импортирование друзей
+{% endblock %}
+{% block content %}
+{% include 'cosmos/includes/header_template.html' %}
+
+<div>
+    <h5 class="card-title" style="margin-left: 25%;">Выберите друзей</h5>
+    <form enctype="multipart/form-data" action=" {% url 'import_friends'%} " method="post"
+          class="w-50 pt-2 list-group-item-secondary" style="margin-left: 25%;">
+        {% csrf_token %}
+        <input class="btn btn-primary ml-4 mb-2" id="select-all" type="checkbox" onclick="false">
+        <input class="mb-2 w-75 form-control d-inline" type="search" id="search_name" placeholder="Поиск...">
+        <ul data-bs-spy="scroll" class="list-group" style="overflow-y: scroll; height: 280px">
+            {% for friend in f_list %}
+            <li class="list-group-item list-group-item-light maybe-selected">
+                <input class="form-check-input ml-1 mt-2" type="checkbox" name="exported_friends" value={{friend.id}}>
+                <img class="ml-4 rounded-circle" src="{{ friend.photo_50 }}" height=30, width=30>
+                <span>{{friend.first_name}} {{friend.last_name}}</span>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div class="text-right bg-light">
+            <button type="submit" class="mb-1 mt-2 btn btn-outline-dark">Импорт</button>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    function select(event) {
+        if (event.target === this.childNodes[1]) {
+            return;
+        }
+        this.childNodes[1].checked = !this.childNodes[1].checked;
+    }
+
+    let selectedAll = false;
+    function selectAll() {
+        this.innerText = selectedAll ? 'Выбрать всех' : 'Отменить выбор всех';
+        selectedAll = !selectedAll;
+        for (const element of document.getElementsByClassName('maybe-selected')) {
+            element.childNodes[1].checked = selectedAll;
+        }
+    }
+    function searchAll(event){
+        search_ask = event.target.value.toLowerCase()
+        for (const element of document.getElementsByClassName('maybe-selected')) {
+            if (!element.childNodes[element.childNodes.length-2].innerText.toLowerCase().includes(search_ask)) {
+                element.classList.add('d-none');
+            } else {
+                element.classList.remove('d-none');
+            }
+        }
+    }
+
+    document.getElementById('search_name').addEventListener('input', searchAll);
+    document.getElementById('select-all').addEventListener('click', selectAll);
+    for (const element of document.getElementsByClassName('maybe-selected')) {
+        element.addEventListener('click', select);
+    }
+
+</script>
+{% endblock %}

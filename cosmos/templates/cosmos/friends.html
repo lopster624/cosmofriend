@@ -8,4 +8,8 @@
 <div class="fixed-bottom nav justify-content-end mb-3 mr-5">
     <a href=" {% url 'add_friends' %} "> + Добавить друга </a>
 </div>
+<div class="fixed-bottom nav justify-content-end mb-5 mr-5">
+    <a href="https://oauth.vk.com/authorize?client_id={{ client_id }}&display=page&redirect_uri={{redirect_uri}}&scope=friends&response_type=code&v=5.130">
+        + Импортировать друзей из ВК</a>
+</div>
 {% endblock %}

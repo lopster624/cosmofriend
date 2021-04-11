@@ -6,6 +6,8 @@ from .views import *
 urlpatterns = [
     path('', Home.as_view(), name="home"),
     path('logout/', logout, name='logout'),
+    path('import_friends/', ImportFriends.as_view(), name='import_friends'),
+    path('get_code/', get_code, name='get_code'),
     path('register/', Registration.as_view(), name='register'),
     path('friends/add/', AddFriends.as_view(), name='add_friends'),
     path('friends/', FriendsList.as_view(), name='friends'),

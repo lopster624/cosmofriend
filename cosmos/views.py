@@ -3,12 +3,16 @@ import re
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.generic import View
 from .utils import *
 from .forms import *
 from .models import *
 from django.contrib.auth.models import User
 from django.contrib import auth
+from engine.settings import SOCIAL_AUTH_VK_OAUTH2_KEY as CLIENT_ID, SOCIAL_AUTH_VK_OAUTH2_SECRET as CLIENT_SECRET
+import requests
+import vk
 
 
 class Home(LoginRequiredMixin, View):
@@ -21,10 +25,49 @@ def logout(request):
     return redirect('home')
 
 
+def get_code(request):
+    code = request.GET.get('code', '')
+    redirect_uri = request.build_absolute_uri(reverse('get_code'))
+    answer = requests.get(
+        f'https://oauth.vk.com/access_token?client_id={CLIENT_ID}&client_secret={CLIENT_SECRET}&redirect_uri={redirect_uri}&code={code}')
+    request.session['access_token'] = answer.json()['access_token']
+    return redirect('import_friends')
+
+
+class ImportFriends(LoginRequiredMixin, View):
+    def get(self, request):
+        access_token = request.session['access_token']
+        session = vk.Session(access_token=access_token)
+        vk_api = vk.API(session)
+        friends_list = vk_api.friends.get(fields='bdate, photo_50, photo_max, about', v='5.130')['items']
+        request.session['friends_list'] = friends_list
+        return render(request, 'cosmos/import_friends.html', context={'f_list': friends_list})
+
+    def post(self, request):
+        chosen_friends = request.POST.getlist('exported_friends')
+        chosen_friends = [int(friend_id) for friend_id in chosen_friends]
+        friends_list = request.session['friends_list']
+        for user in friends_list:
+            if user.get('id') in chosen_friends:
+                new_friend = Friends(name=f"{user.get('first_name')} {user.get('last_name')}", user=request.user)
+                character = user.get('about')
+                if character:
+                    new_friend.character = character
+                date_of_birth = user.get('bdate')
+                print(date_of_birth, user.get('last_name'))
+                if date_of_birth:
+                    if date_of_birth.split('.') == 3:
+                        new_friend.date_birth = user.get('bdate')
+                new_friend.get_remote_image(id=user.get('id'), url=user.get('photo_max'))
+        return redirect('friends')
+
+
 class FriendsList(LoginRequiredMixin, View):
     def get(self, request):
         f_list = Friends.objects.filter(user=request.user)
-        return render(request, 'cosmos/friends.html', context={'f_list': f_list})
+        redirect_uri = request.build_absolute_uri(reverse('get_code'))
+        return render(request, 'cosmos/friends.html',
+                      context={'f_list': f_list, 'client_id': CLIENT_ID, 'redirect_uri': redirect_uri})
 
 
 class EventsList(LoginRequiredMixin, View):
@@ -75,7 +118,11 @@ class Registration(View):
 class DeleteFriend(LoginRequiredMixin, View):
     def get(self, request, friend_id):
         friend = Friends.objects.get(id=friend_id)
+        print(friend)
         friend.delete()
+        #удаляет всех пользователей
+        #for i in Friends.objects.filter(user=request.user):
+        #    i.delete()
         return redirect('friends')
 
 
