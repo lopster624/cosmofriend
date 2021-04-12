@@ -10,22 +10,20 @@
 {% endblock header%}
 
 {% block content %}
-
 <div class="mx-auto">
-    <form method="post" class="card p-2 mb-2 w-50 bg-default text-center" style="margin-left: 25%; margin-top: 10%" action="{% url 'login' %}">
+    <form method="post" class="card p-2 mb-2 w-50 bg-default text-center" style="margin-left: 25%; margin-top: 10%"
+          action="{% url 'login' %}">
         {% csrf_token %}
-        {% for f in form %}
-        <div class="mb-2">
-            {{ f.label }}<br>
-            {{ f }}
-        </div>
-        {% endfor %}
+        <label for="username">Логин:</label>
+        <input class="mb-2" type="text" name="username" value="" id="username">
+        <label for="password">Пароль:</label>
+        <input class="mb-2" type="password" name="password" value="" id="password">
         {% if form.errors %}
         <div>
             Пожалуйста, введите правильные имя пользователя и пароль.
         </div>
         {% endif %}
-        <input type="submit" class="btn btn-outline-dark w-25 mt-2 mb-2" style="margin-left: 37.5%" value="Войти"/>
+        <input type="submit" class="btn btn-outline-dark mt-2 mb-2" value="Войти"/>
         <div>
             <a href="{% url 'register' %}">Регистрация</a>
         </div>
@@ -35,4 +33,5 @@
 
     </form>
 </div>
+
 {% endblock %}

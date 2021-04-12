@@ -4,7 +4,8 @@
 {% endblock title %}
 {% block content %}
 {% include 'cosmos/includes/header_template.html' %}
-<form enctype="multipart/form-data" action=" {% url 'create_event' %} " class="card p-2 mb-2 w-50 bg-default" method="post">
+<form enctype="multipart/form-data" action=" {% url 'create_event' %} " class="card p-2 mb-2 w-50 bg-default"
+      style="margin-left: 25%" method="post">
     {% include 'cosmos/includes/forms_labels_template.html' %}
     <button type="submit" class="btn btn-outline-dark">Создать</button>
 </form>

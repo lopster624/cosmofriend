@@ -61,7 +61,7 @@ class ImportFriends(LoginRequiredMixin, View):
                         date_of_birth = datetime.date(int(date_of_birth[2]), int(date_of_birth[1]),
                                                       int(date_of_birth[0]))
                         new_friend.date_birth = date_of_birth
-                        new_friend.get_remote_image(id=user.get('id'), url=user.get('photo_max'))
+                new_friend.get_remote_image(id=user.get('id'), url=user.get('photo_max'))
         return redirect('friends')
 
 
