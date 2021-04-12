@@ -1,6 +1,7 @@
+import datetime
 import re
-
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -24,7 +25,7 @@ def logout(request):
     auth.logout(request)
     return redirect('home')
 
-
+@login_required
 def get_code(request):
     code = request.GET.get('code', '')
     redirect_uri = request.build_absolute_uri(reverse('get_code'))
@@ -51,14 +52,16 @@ class ImportFriends(LoginRequiredMixin, View):
             if user.get('id') in chosen_friends:
                 new_friend = Friends(name=f"{user.get('first_name')} {user.get('last_name')}", user=request.user)
                 character = user.get('about')
-                if character:
+                if character is not None:
                     new_friend.character = character
                 date_of_birth = user.get('bdate')
-                print(date_of_birth, user.get('last_name'))
                 if date_of_birth:
-                    if date_of_birth.split('.') == 3:
-                        new_friend.date_birth = user.get('bdate')
-                new_friend.get_remote_image(id=user.get('id'), url=user.get('photo_max'))
+                    date_of_birth = date_of_birth.split('.')
+                    if len(date_of_birth) == 3:
+                        date_of_birth = datetime.date(int(date_of_birth[2]), int(date_of_birth[1]),
+                                                      int(date_of_birth[0]))
+                        new_friend.date_birth = date_of_birth
+                        new_friend.get_remote_image(id=user.get('id'), url=user.get('photo_max'))
         return redirect('friends')
 
 
@@ -120,8 +123,8 @@ class DeleteFriend(LoginRequiredMixin, View):
         friend = Friends.objects.get(id=friend_id)
         print(friend)
         friend.delete()
-        #удаляет всех пользователей
-        #for i in Friends.objects.filter(user=request.user):
+        # удаляет всех пользователей
+        # for i in Friends.objects.filter(user=request.user):
         #    i.delete()
         return redirect('friends')
 

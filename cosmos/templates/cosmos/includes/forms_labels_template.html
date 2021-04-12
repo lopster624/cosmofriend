@@ -1,6 +1,6 @@
 {% csrf_token %}
 {% for f in form %}
-<div class="w-50 form-group">
+<div class="form-group">
     {{ f.label }}
     {{ f }}
     {% if f.errors %}

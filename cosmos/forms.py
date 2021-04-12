@@ -33,13 +33,13 @@ class AddFrForm(ModelForm):
             'photo': 'Фотография',
         }
         widgets = {
-            'name': Input(attrs={'class': 'form-control bg-dark text-white'}),
+            'name': Input(attrs={'class': 'form-control bg-light'}),
             'character': Textarea(attrs={
-                'class': 'form-control bg-dark text-white',
+                'class': 'form-control bg-light',
                 'rows': '3',
             }),
-            'date_birth': Input(attrs={'class': 'form-control bg-dark text-white'}),
-            'date_begin': Input(attrs={'class': 'form-control bg-dark text-white'}),
+            'date_birth': Input(attrs={'class': 'form-control bg-light'}),
+            'date_begin': Input(attrs={'class': 'form-control bg-light'}),
             'photo': Input(attrs={
                 'class': 'form-control-file',
                 'type': 'file',
@@ -57,13 +57,13 @@ class CreateEventForm(ModelForm):
         model = Events
         fields = ['title', 'report', 'date', 'points', 'members']
         widgets = {
-            'title': Input(attrs={'class': 'form-control bg-dark text-white'}),
+            'title': Input(attrs={'class': 'form-control bg-light'}),
             'report': Textarea(attrs={
-                'class': 'form-control bg-dark text-white',
+                'class': 'form-control bg-light',
                 'rows': '3',
             }),
-            'date': Input(attrs={'class': 'form-control bg-dark text-white'}),
-            'points': Select(attrs={'class': 'form-control bg-dark text-white'}),
+            'date': Input(attrs={'class': 'form-control bg-light'}),
+            'points': Select(attrs={'class': 'form-control bg-light'}),
         }
 
     def __init__(self, *args, **kwargs):

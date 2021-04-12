@@ -5,11 +5,13 @@
 {% block content %}
 {% include 'cosmos/includes/header_template.html' %}
 {% include 'cosmos/includes/friends_template.html' %}
-<div class="fixed-bottom nav justify-content-end mb-3 mr-5">
-    <a href=" {% url 'add_friends' %} "> + Добавить друга </a>
-</div>
-<div class="fixed-bottom nav justify-content-end mb-5 mr-5">
-    <a href="https://oauth.vk.com/authorize?client_id={{ client_id }}&display=page&redirect_uri={{redirect_uri}}&scope=friends&response_type=code&v=5.130">
+<div class="fixed-top nav justify-content-end mb-3 mr-5 border border-dark p-2" style="width: 20%; margin-left: 78%; margin-top: 5%;">
+    <div>
+            <a href=" {% url 'add_friends' %} "> + Добавить друга </a>
+    </div>
+    <div>
+        <a href="https://oauth.vk.com/authorize?client_id={{ client_id }}&display=page&redirect_uri={{redirect_uri}}&scope=friends&response_type=code&v=5.130">
         + Импортировать друзей из ВК</a>
+    </div>
 </div>
 {% endblock %}

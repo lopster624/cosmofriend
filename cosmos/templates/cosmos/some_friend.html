@@ -5,13 +5,15 @@
 {% endblock %}
 {% block content %}
 {% include 'cosmos/includes/header_template.html' %}
-<div class="ml-5">
-    {% include 'cosmos/includes/friend_card_template.html'%}
+<div class="row justify-content-center w-100">
+    <div class="col-4">
+        {% include 'cosmos/includes/big_friend_card_template.html'%}
+    </div>
+    <div class="col-4">
+        {% for event in e_list %}
+        {% include 'cosmos/includes/event_card_template.html' %}
+        {% endfor %}
+    </div>
+    {% include 'cosmos/includes/add_event_template.html' %}
+    {% endblock %}
 </div>
-<div>
-    {% for event in e_list %}
-    {% include 'cosmos/includes/event_card_template.html' %}
-    {% endfor %}
-</div>
-{% include 'cosmos/includes/add_event_template.html' %}
-{% endblock %}

@@ -1,5 +1,5 @@
 {% load static %}
-<div class="card bg-dark ml-5 mb-3 w-50">
+<div class="card bg-light mb-3 w-100">
     <div class="card-body">
         <a href="{% url 'some_event' event.id %}"><h5 class="card-title">{{event.title}}</h5></a>
         <p class="card-text">{%if short%}{{event.report|truncatewords:15}}{%else%}{{event.report}}{%endif%}</p>
@@ -49,13 +49,14 @@
             {%endfor%}
         ]
         });
+
         </script>
         {% endif %}
         <div class="form-inline mb-3 mt-3 ml-3 text-center">
             <form class="mr-2" action="{% url 'edit_event' event.id %}">
-                <button type="submit" class="btn btn-outline-light">Редактировать</button>
+                <button type="submit" class="btn btn-outline-dark">Редактировать</button>
             </form>
-            <button type="button" class="btn btn-outline-light" data-toggle="modal"
+            <button type="button" class="btn btn-outline-dark" data-toggle="modal"
                     data-target="#staticBackdrop{{event.id}}">Удалить
             </button>
         </div>
@@ -63,7 +64,7 @@
     <div class="modal fade" id="staticBackdrop{{event.id}}" data-backdrop="static" tabindex="-1" role="dialog"
          aria-labelledby="staticBackdropLabel{{event.id}}" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content bg-dark">
+            <div class="modal-content bg-light">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel{{event.id}}">Удаление события</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -83,5 +84,4 @@
             </div>
         </div>
     </div>
-</div>
 </div>

@@ -12,11 +12,11 @@
 {% block content %}
 
 <div class="mx-auto">
-    <form method="post" action="{% url 'login' %}">
+    <form method="post" class="card p-2 mb-2 w-50 bg-default text-center" style="margin-left: 25%; margin-top: 10%" action="{% url 'login' %}">
         {% csrf_token %}
         {% for f in form %}
-        <div>
-            {{ f.label }}
+        <div class="mb-2">
+            {{ f.label }}<br>
             {{ f }}
         </div>
         {% endfor %}
@@ -25,11 +25,14 @@
             Пожалуйста, введите правильные имя пользователя и пароль.
         </div>
         {% endif %}
-        <input type="submit" value="Войти"/>
+        <input type="submit" class="btn btn-outline-dark w-25 mt-2 mb-2" style="margin-left: 37.5%" value="Войти"/>
+        <div>
+            <a href="{% url 'register' %}">Регистрация</a>
+        </div>
+        <div>
+            <a href="/login/vk-oauth2">Войти через ВКонтакте</a>
+        </div>
+
     </form>
-    <div>
-        <a href="{% url 'register' %}">Регистрация</a>
-    </div>
-    <a href="/login/vk-oauth2">Войти через ВКонтакте</a>
 </div>
 {% endblock %}

@@ -4,10 +4,11 @@
 {% endblock %}
 {% block content %}
 {% include 'cosmos/includes/header_template.html' %}
-<form enctype="multipart/form-data" action=" {% url 'add_friends' %} " class="ml-5" method="post">
+<form enctype="multipart/form-data" action=" {% url 'add_friends' %} " class="card p-2 mb-2 w-50 bg-default"
+      method="post" style="margin-left: 25%">
     {% include 'cosmos/includes/forms_labels_template.html' %}
-    <div class="w-50 text-center">
-        <button type="submit" class="btn btn-light">Добавить</button>
+    <div class="text-center">
+        <button type="submit" class="btn btn-outline-dark">Добавить</button>
     </div>
 </form>
 {% endblock %}

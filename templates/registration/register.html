@@ -8,21 +8,28 @@
 
 {% block content %}
 
-<form method="post" action="{% url 'register' %}">
-  {% csrf_token %}
-  {% for f in form %}
-    <div>
-      {{ f.label }}
-      {{ f }}
+<form method="post" class="card p-2 mb-2 w-50 bg-default text-center" style="margin-left: 25%; margin-top: 10%" action="{% url 'register' %}">
+    {% csrf_token %}
+    {% for f in form %}
+    <div class="mb-2">
+        {{ f.label }}
+        {{ f }}
     </div>
     {% if form.errors %}
-        <div>
-            {{ f.errors }}
-        </div>
-  {% endif %}
-  {% endfor %}
+    <div class="mb-2">
+        {{ f.errors }}
+    </div>
+    {% endif %}
+    {% endfor %}
 
-  <input type="submit" value="Зарегестрироваться" />
+    <input type="submit" class="btn btn-outline-dark mt-2 mb-2" value="Зарегестрироваться"/>
+    <div>
+        <a href="{% url 'login' %}">Вход</a>
+    </div>
+    <div>
+        <a href="/login/vk-oauth2">Войти через ВКонтакте</a>
+    </div>
+
 </form>
 
 {% endblock %}

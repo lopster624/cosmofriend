@@ -4,11 +4,11 @@
 {% endblock title %}
 {% block content %}
 {% include 'cosmos/includes/header_template.html' %}
-<form enctype="multipart/form-data" action=" {% url 'edit_event' event.id%} " class="ml-5" method="post">
+<form enctype="multipart/form-data" action=" {% url 'edit_event' event.id%} " class="card p-2 mb-2 w-50 bg-default" method="post" style="margin-left: 25%;">
     {% include 'cosmos/includes/forms_labels_template.html' %}
     {% include 'cosmos/includes/files_template.html' %}
-    <div class="w-50 mt-4 text-center">
-        <button type="submit" class="btn btn-light">Применить изменения</button>
+    <div class="mt-2 mb-2 text-center">
+        <button type="submit" class="btn btn-outline-dark">Применить изменения</button>
     </div>
 </form>
 {% endblock %}
