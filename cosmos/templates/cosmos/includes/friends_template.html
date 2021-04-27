@@ -1,4 +1,6 @@
 <div>
+    <input class="mb-2 form-control d-inline w-50" type="search" id="search_name" placeholder="Поиск..."
+           style="margin-left: 25%;">
     {% for friend in f_list %}
     {% include 'cosmos/includes/friend_card_template.html'%}
     {% endfor %}

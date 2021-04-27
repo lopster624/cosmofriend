@@ -10,10 +10,12 @@
         {% include 'cosmos/includes/big_friend_card_template.html'%}
     </div>
     <div class="col-4 pl-0">
+        <input class="mb-2 form-control d-inline" type="search" id="search_event" placeholder="Поиск...">
         {% for event in e_list %}
         {% include 'cosmos/includes/event_card_template.html' %}
         {% endfor %}
     </div>
     {% include 'cosmos/includes/add_event_template.html' %}
-    {% endblock %}
 </div>
+<script src="{% static 'js/search_events.js' %}" type="text/javascript"></script>
+{% endblock %}
