@@ -14,9 +14,8 @@
             {%endif%}
             {%if photos%}
             <p class="card-text">Фотографии:</p>
-            <div id="carouselControls" class="carousel slide mb-4" data-ride="carousel">
+            <div id="carouselControls{{event.id}}" class="carousel slide mb-4 w-75" data-bs-ride="carousel">
                 <div class="carousel-inner">
-
                     {% for f in photos %}
                     {%if forloop.first%}
                     <div class="carousel-item active">
@@ -36,68 +35,55 @@
                         <span class="sr-only">Next</span>
                     </a>
                 </div>
+                {%endif%}
+                {% if videos%}
+                <p class="card-text ml-3">Видеозаписи:</p>
+                <div id="player" class="mx-3"></div>
+                <script src="{% static 'js/myplayer.js' %}" type="text/javascript"></script>
+                {% endif %}
             </div>
-            {%endif%}
-            {% if videos%}
-            <p class="card-text ml-3">Видеозаписи:</p>
-            <div id="player" class="mx-3"></div>
-            <script>
-        var player = new Playerjs({
-        id:"player",
-        file:[
-            {% for video in videos%}
-            {"title":"{{video.title}}","file":"{{video.video.url}}"},
-            {%endfor%}
-        ]
-        });
-            </script>
-            {% endif %}
-        </div>
-        <div class="modal fade" id="staticBackdrop{{event.id}}" data-backdrop="static" tabindex="-1" role="dialog"
-             aria-labelledby="staticBackdropLabel{{event.id}}" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content bg-light">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel{{event.id}}">Удаление события</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Стоп! То есть ты хочешь удалить это событие? Просто стереть все воспоминания о нем и позже
-                        забыть?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                        <form action="{% url 'delete_event' event.id %}">
-                            <button type="submit" class="btn btn-danger">Удалить событие</button>
-                        </form>
+            <div class="col-md-auto mt-2 ">
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" id="navbarScrollingDropdown{{event.id}}"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown{{event.id}}">
+                        <li>
+                            <form action="{% url 'edit_event' event.id %}">
+                                <button type="submit" class="btn btn-link">Редактировать</button>
+                            </form>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button type="button" class="btn btn-link" data-toggle="modal"
+                                    data-target="#staticBackdrop{{event.id}}">Удалить
+                            </button>
+                        </li>
+                    </ul>
+                </li>
+            </div>
+            <div class="modal fade" id="staticBackdrop{{event.id}}" data-backdrop="static" tabindex="-1" role="dialog"
+                 aria-labelledby="staticBackdropLabel{{event.id}}" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content bg-light">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel{{event.id}}">Удаление события</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Стоп! То есть ты хочешь удалить это событие? Просто стереть все воспоминания о нем и позже
+                            забыть?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                            <form action="{% url 'delete_event' event.id %}">
+                                <button type="submit" class="btn btn-danger">Удалить событие</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-auto mt-2 ">
-            <li class="nav-item dropdown">
-                <a class="dropdown-toggle" id="navbarScrollingDropdown"
-                   data-bs-toggle="dropdown" aria-expanded="false">
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-                    <li>
-                        <form action="{% url 'edit_event' event.id %}">
-                            <button type="submit" class="btn btn-link">Редактировать</button>
-                        </form>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li>
-                        <button type="button" class="btn btn-link" data-toggle="modal"
-                                data-target="#staticBackdrop{{event.id}}">Удалить
-                        </button>
-                    </li>
-                </ul>
-            </li>
-        </div>
     </div>
-</div>

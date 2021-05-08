@@ -1,6 +1,7 @@
 import re
 from urllib.request import urlopen
 
+from PIL import Image, ImageOps
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
@@ -25,19 +26,24 @@ class Friends(models.Model):
     photo = models.ImageField(upload_to='photos/%Y/%m/%d', blank=True, null=True)
     groups = models.ManyToManyField(Group, blank=True, related_name='peoples')
 
-    # def save(self, *args, **kwargs):
-    # super(Friends, self).save(*args, **kwargs)
-    # if self.photo:
+    def save(self, *args, **kwargs):
+        super(Friends, self).save(*args, **kwargs)
+        if self.photo:
+            image = Image.open(self.photo.path)
+            filename = image.filename
+            cropped_image = ImageOps.fit(image, (200, 200), Image.ANTIALIAS)
+            try:
+                exif = image.info['exif']
+                cropped_image.save(filename, quality=40, exif=exif, optimize=True)
+            except KeyError:
+                cropped_image.save(filename, quality=40, optimize=True)
 
-    # image = Image.open(self.photo.path)
-    # image.save(image.filename, quality=40, optimize=True)
-
-    def get_remote_image(self, id, url):
+    def get_remote_image(self, id_user, url):
         img_temp = NamedTemporaryFile()
         img_temp.write(urlopen(url).read())
         img_temp.flush()
         ras = re.search(r'(.jpg|.png|.jpeg|.svg)', str(url).lower())
-        self.photo.save(f'{id} user picture{ras.group(1)}', File(img_temp))
+        self.photo.save(f'{id_user} user picture{ras.group(1)}', File(img_temp))
         self.save()
 
     class Meta:
@@ -75,8 +81,12 @@ class Photos(models.Model):
 
     def save(self, *args, **kwargs):
         super(Photos, self).save(*args, **kwargs)
-        # image = Image.open(self.image.path)
-        # image.save(image.filename, quality=40, optimize=True)
+        image = Image.open(self.image.path)
+        try:
+            exif = image.info['exif']
+            image.save(image.filename, quality=40, exif=exif, optimize=True)
+        except KeyError:
+            image.save(image.filename, quality=40, optimize=True)
 
     class Meta:
         verbose_name = "Фотография"

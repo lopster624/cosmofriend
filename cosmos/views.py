@@ -1,19 +1,18 @@
 import datetime
-import re
+
+import requests
+import vk
+from django.contrib import auth
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.generic import View
-from .utils import *
+
+from engine.settings import SOCIAL_AUTH_VK_OAUTH2_KEY as CLIENT_ID, SOCIAL_AUTH_VK_OAUTH2_SECRET as CLIENT_SECRET
 from .forms import *
 from .models import *
-from django.contrib.auth.models import User
-from django.contrib import auth
-from engine.settings import SOCIAL_AUTH_VK_OAUTH2_KEY as CLIENT_ID, SOCIAL_AUTH_VK_OAUTH2_SECRET as CLIENT_SECRET
-import requests
-import vk
 
 
 class Home(LoginRequiredMixin, View):
@@ -61,7 +60,7 @@ class ImportFriends(LoginRequiredMixin, View):
                         date_of_birth = datetime.date(int(date_of_birth[2]), int(date_of_birth[1]),
                                                       int(date_of_birth[0]))
                         new_friend.date_birth = date_of_birth
-                new_friend.get_remote_image(id=user.get('id'), url=user.get('photo_max'))
+                new_friend.get_remote_image(id_user=user.get('id'), url=user.get('photo_max'))
         return redirect('friends')
 
 
