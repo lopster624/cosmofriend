@@ -11,19 +11,24 @@
     <form enctype="multipart/form-data" action=" {% url 'import_friends'%} " method="post"
           class="w-50 pt-2 list-group-item-secondary" style="margin-left: 25%;">
         {% csrf_token %}
-        <input class="btn btn-primary ml-4 mb-2" id="select-all" type="checkbox" onclick="false">
-        <input class="mb-2 form-control d-inline" type="search" id="search_name" placeholder="Поиск..." style="width: 91%;">
+        <li class="ms-1">
+            <input class="form-check-input ms-3 mt-2" id="select-all" type="checkbox" onclick="false">
+            <input class="mb-2 form-control d-inline" type="search" id="search_name" placeholder="Поиск..."
+                   style="width: 91%;">
+            <span>{{friend.first_name}} {{friend.last_name}}</span>
+        </li>
+
         <ul data-bs-spy="scroll" class="list-group" style="overflow-y: scroll; height: 25em">
             {% for friend in f_list %}
             <li class="list-group-item list-group-item-light maybe-selected">
-                <input class="form-check-input ml-1 mt-2" type="checkbox" name="exported_friends" value={{friend.id}}>
-                <img class="ml-4 rounded-circle" src="{{ friend.photo_50 }}" style="width: 30px; height=30px;">
+                <input class="form-check-input ms-1 mt-2" type="checkbox" name="exported_friends" value={{friend.id}}>
+                <img class="ms-4 rounded-circle" src="{{ friend.photo_50 }}" style="width: 30px; height=30px;">
                 <span>{{friend.first_name}} {{friend.last_name}}</span>
             </li>
             {% endfor %}
         </ul>
 
-        <div class="text-right bg-light">
+        <div class="text-end bg-light">
             <button type="submit" class="mb-1 mt-2 btn btn-outline-dark">Импорт</button>
         </div>
     </form>

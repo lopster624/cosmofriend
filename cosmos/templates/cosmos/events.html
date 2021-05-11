@@ -6,7 +6,7 @@
 {% block content %}
 {% include 'cosmos/includes/header_template.html' %}
 <div class="w-50" style="margin-left: 25%;">
-    <input class="mb-2 form-control d-inline" type="search" id="search_event" placeholder="Поиск...">
+    <input class="mb-1 form-control d-inline" type="search" id="search_event" placeholder="Поиск...">
     {% for event in e_list %}
     {% include 'cosmos/includes/event_card_template.html' %}
     {% endfor %}

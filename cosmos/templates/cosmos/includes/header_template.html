@@ -1,22 +1,26 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href=" {% url 'home' %} ">CosmoFriends</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <div class="container-fluid">
+        <a class="navbar-brand" href=" {% url 'home' %} ">CosmoFriends</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href=" {% url 'friends' %} ">Друзья</a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="{% url 'events' %}">События</a>
-            </li>
-        </ul>
-        <div class="text-light">
-            {{ user.get_full_name }}
-            <a class="ml-3" href=" {% url 'logout' %} ">Выйти</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-lg-0">
+                <li class="nav-item active">
+                    <a class="nav-link" href=" {% url 'friends' %} ">Друзья</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'events' %}">События</a>
+                </li>
+            </ul>
+            <div class="text-light">
+                {{ user.get_full_name }}
+            </div>
+            <div class="text-light">
+                <a class="p-2 nav-link" href=" {% url 'logout' %} ">Выйти</a>
+            </div>
         </div>
     </div>
 </nav>

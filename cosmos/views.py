@@ -25,6 +25,7 @@ def logout(request):
     auth.logout(request)
     return redirect('home')
 
+
 @login_required
 def get_code(request):
     code = request.GET.get('code', '')
@@ -121,7 +122,6 @@ class Registration(View):
 class DeleteFriend(LoginRequiredMixin, View):
     def get(self, request, friend_id):
         friend = Friends.objects.get(id=friend_id)
-        print(friend)
         friend.delete()
         # удаляет всех пользователей
         # for i in Friends.objects.filter(user=request.user):
@@ -174,6 +174,7 @@ class CreateEvent(LoginRequiredMixin, View):
             new_event.save()
             if request.FILES:
                 for f in request.FILES.getlist('images'):
+                    print(f)
                     Photos(event=new_event, image=f).save()
                 for f in request.FILES.getlist('videos'):
                     file_format = re.findall(r"\.mp4$", f.name)
@@ -207,6 +208,19 @@ class EditEvent(LoginRequiredMixin, View):
             for mem in request.POST.getlist('members'):
                 new_event.members.add(mem)
             new_event.save()
+            pictures_on_delete = request.POST.get('delete_photos', None)
+            if pictures_on_delete:
+                pictures_on_delete = pictures_on_delete.split()
+                for pic_id in pictures_on_delete:
+                    current_picture = Photos.objects.get(id=int(pic_id))
+                    current_picture.delete()
+            videos_on_delete = request.POST.get('delete_videos', None)
+            if videos_on_delete:
+                videos_on_delete = videos_on_delete.split()
+                for vid_id in videos_on_delete:
+                    current_video = Videos.objects.get(id=int(vid_id))
+                    current_video.delete()
+
             if request.FILES:
                 for f in request.FILES.getlist('images'):
                     Photos(event=new_event, image=f).save()

@@ -1,8 +1,8 @@
 {% load static %}
-<div class="card bg-light mb-3 w-100">
-    <div class="row">
-        <div class="ml-2 card-body col-10 maybe-selected">
-            <a href="{% url 'some_event' event.id %}"><h5 class="card-title">{{event.title}}</h5></a>
+<div class="card bg-light mb-1 w-100">
+    <div class="row g-1">
+        <div class="p-4 col-11 maybe-selected">
+            <a href="{% url 'some_event' event.id %}"><h5 class="card-title ">{{event.title}}</h5></a>
             <p class="card-text">{%if short%}{{event.report|truncatewords:15}}{%else%}{{event.report}}{%endif%}</p>
             <p class="card-text">Участники:
                 {%for member in event.members.all %}
@@ -14,7 +14,7 @@
             {%endif%}
             {%if photos%}
             <p class="card-text">Фотографии:</p>
-            <div id="carouselControls{{event.id}}" class="carousel mb-4 w-75" data-interval="false">
+            <div id="carouselControls{{event.id}}" class="carousel mb-4 w-75" data-bs-interval="false" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     {% for f in photos %}
                     {%if forloop.first%}
@@ -26,20 +26,20 @@
                         </div>
                         {%endfor%}
                     </div>
-                    <a class="carousel-control-prev" href="#carouselControls{{event.id}}" role="button"
-                       data-slide="prev">
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselControls{{event.id}}"
+                            data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselControls{{event.id}}" role="button"
-                       data-slide="next">
+                        <span class="visually-hidden">Предыдущий</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselControls{{event.id}}"
+                            data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
+                        <span class="visually-hidden">Следующий</span>
+                    </button>
                 </div>
                 {%endif%}
                 {% if videos%}
-                <p class="card-text ml-3">Видеозаписи:</p>
+                <p class="card-text ms-3">Видеозаписи:</p>
                 <div id="player" class="mx-3"></div>
                 <script>
                     var player = new Playerjs({
@@ -51,10 +51,11 @@
                     ]
                     });
 
+
                 </script>
                 {% endif %}
             </div>
-            <div class="col-md-auto mt-2 ">
+            <div class="col-md-auto gy-2 ">
                 <li class="nav-item dropdown">
                     <a class="dropdown-toggle" id="navbarScrollingDropdown{{event.id}}"
                        data-bs-toggle="dropdown" aria-expanded="false">
@@ -62,15 +63,15 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown{{event.id}}">
                         <li>
                             <form action="{% url 'edit_event' event.id %}">
-                                <button type="submit" class="btn btn-link">Редактировать</button>
+                                <button type="submit" class="dropdown-item">Редактировать</button>
                             </form>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <button type="button" class="btn btn-link" data-toggle="modal"
-                                    data-target="#staticBackdrop{{event.id}}">Удалить
+                            <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                    data-bs-target="#staticBackdrop{{event.id}}">Удалить
                             </button>
                         </li>
                     </ul>
@@ -82,14 +83,14 @@
                     <div class="modal-content bg-light">
                         <div class="modal-header">
                             <h5 class="modal-title" id="staticBackdropLabel{{event.id}}">Удаление события</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             Стоп! То есть ты хочешь удалить это событие? Просто стереть все воспоминания о нем и позже
                             забыть?
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                             <form action="{% url 'delete_event' event.id %}">
                                 <button type="submit" class="btn btn-danger">Удалить событие</button>
                             </form>

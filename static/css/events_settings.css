@@ -11,10 +11,13 @@
 }
 .selector-chosen{
     display: inline-block;
+    position: relative;
+    float: top;
 }
 
 select {
     width: 100%;
+
    }
 
 .selector-clearall{
@@ -29,6 +32,13 @@ select {
 
 #id_members_input{
     margin-left:-2%;
+}
+#id_members_to{
+    margin-top: 9%;
+
+}
+#id_members_from{
+    height: 100px;
 }
 
 h2{

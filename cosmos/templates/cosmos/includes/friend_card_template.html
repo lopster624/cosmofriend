@@ -1,35 +1,35 @@
 {% load static %}
 <div class="card mb-1 bg-default w-50 maybe-selected" style="margin-left: 25%;">
     <div class="row no-gutters">
-        <div class="col-2 m-2 centered">
+        <div class="col-3 m-2 centered">
             {% if friend.photo %}
             <img class="card-img rounded-circle" src="{{ friend.photo.url }}" style="width: 100px; height: 100px;">
             {%else%}
             <img class="card-img rounded-circle" src="{% static 'photo.png' %}" style="width: 100px; height: 100px;">
             {%endif%}
         </div>
-        <div class="col-6 centered">
+        <div class="col-7 text-left">
             <div class="card-body mt-4">
                 <h5 class="card-title"><a href="{% url 'some_friend' friend.id%}">{{friend.name}}</a></h5>
             </div>
         </div>
-        <div class="col text-right mr-3 mt-2">
+        <div class="col text-right mt-2">
             <li class="nav-item dropdown">
-                <a class="dropdown-toggle" id="navbarScrollingDropdown"
+                <a class="dropdown-toggle" id="navbarScrollingDropdown{{friend.id}}"
                    data-bs-toggle="dropdown" aria-expanded="false">
                 </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown{{friend.id}}">
                     <li>
                         <form action="{% url 'edit_friend' friend.id %}">
-                            <button type="submit" class="btn btn-link">Редактировать</button>
+                            <button type="submit" class="dropdown-item">Редактировать</button>
                         </form>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <button type="button" class="btn btn-link" data-toggle="modal"
-                                data-target="#staticBackdrop{{friend.id}}">Удалить
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                data-bs-target="#staticBackdrop{{friend.id}}">Удалить
                         </button>
                     </li>
                 </ul>
@@ -37,21 +37,19 @@
         </div>
 
 
-        <div class="modal fade" id="staticBackdrop{{friend.id}}" data-backdrop="static" tabindex="-1" role="dialog"
+        <div class="modal fade" id="staticBackdrop{{friend.id}}" data-bs-backdrop="static" tabindex="-1" role="dialog"
              aria-labelledby="staticBackdropLabel{{friend.id}}" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content bg-light">
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel{{friend.id}}">Удаление друга</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         Подумай еще раз. После всего, что между вами было, ты просто хочешь его удалить?
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                         <form action="{% url 'delete_friend' friend.id %}">
                             <button type="submit" class="btn btn-danger">Удалить друга</button>
                         </form>

@@ -1,12 +1,16 @@
 <div>
     {% for f in photos %}
-    <div class="mr-1 mb-2 d-inline-block" style="width: 127px;">
+    <div id='{{f.id}}'class="me-1 mb-2 d-inline-block position-relative" style="width: 127px;">
+        <button type="button" class="btn-close position-absolute top-0 end-0" onclick="put_pic_id('{{f.id}}')"
+                aria-label="Close"></button>
         <img src="{{ f.image.url }}" class="w-100 h-100"/>
     </div>
     {%endfor%}
 
     {% for v in videos %}
-    <div class="align-top mr-1 mb-2" style="width: 127px; display: inline-block;">
+    <div id='{{v.id}}' class="align-top me-1 mb-2 position-relative" style="width: 127px; display: inline-block;">
+        <input class="btn-close position-absolute top-0 end-0" onclick="put_vid_id('{{v.id}}')" type="button"
+               style="z-index: 2000;"/>
         <video src="{{v.video.url}}" class="w-100 h-100" controls></video>
     </div>
     {%endfor%}

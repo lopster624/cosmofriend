@@ -31,7 +31,7 @@ class Friends(models.Model):
         if self.photo:
             image = Image.open(self.photo.path)
             filename = image.filename
-            cropped_image = ImageOps.fit(image, (200, 200), Image.ANTIALIAS)
+            cropped_image = ImageOps.fit(image, (400, 400), Image.ANTIALIAS)
             try:
                 exif = image.info['exif']
                 cropped_image.save(filename, quality=40, exif=exif, optimize=True)
