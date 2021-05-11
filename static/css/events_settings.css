@@ -1,0 +1,36 @@
+.selector-available{
+    display: inline-block;
+    float: top;
+}
+.selector-chooser{
+    display: inline-block;
+    padding-left: 5%;
+    padding-right: 5%;
+    position: relative;
+    float: top;
+}
+.selector-chosen{
+    display: inline-block;
+}
+
+select {
+    width: 100%;
+   }
+
+.selector-clearall{
+    display: block;
+    align="center";
+}
+
+.selector-chooseall{
+    display: block;
+    align="center";
+}
+
+#id_members_input{
+    margin-left:-2%;
+}
+
+h2{
+    font-weight: normal;
+}

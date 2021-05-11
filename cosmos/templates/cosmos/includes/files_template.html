@@ -1,10 +1,13 @@
-{% for f in photos %}
-<div class="align-top mr-1 mb-2" style="width: 127px; height: 89px; display: inline-block;">
-    <img src="{{ f.image.url }}" class="w-100 h-100"/>
+<div>
+    {% for f in photos %}
+    <div class="mr-1 mb-2 d-inline-block" style="width: 127px;">
+        <img src="{{ f.image.url }}" class="w-100 h-100"/>
+    </div>
+    {%endfor%}
+
+    {% for v in videos %}
+    <div class="align-top mr-1 mb-2" style="width: 127px; display: inline-block;">
+        <video src="{{v.video.url}}" class="w-100 h-100" controls></video>
+    </div>
+    {%endfor%}
 </div>
-{%endfor%}
-{% for v in videos %}
-<div class="align-top mr-1 mb-2" style="width: 127px; height: 89px; display: inline-block;">
-    <video src="{{v.video.url}}" class="w-100 h-100" controls></video>
-</div>
-{%endfor%}

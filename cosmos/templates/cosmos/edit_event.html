@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}
 Редактирование события
 {% endblock title %}
 {% block content %}
 {% include 'cosmos/includes/header_template.html' %}
+<link rel="stylesheet" href="{% static 'css/events_settings.css' %}">
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+{{ form.media }}
 <form enctype="multipart/form-data" action=" {% url 'edit_event' event.id%} " class="card p-2 mb-2 w-50 bg-default" method="post" style="margin-left: 25%;">
     {% include 'cosmos/includes/forms_labels_template.html' %}
     {% include 'cosmos/includes/files_template.html' %}

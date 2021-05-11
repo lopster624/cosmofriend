@@ -14,7 +14,7 @@
             {%endif%}
             {%if photos%}
             <p class="card-text">Фотографии:</p>
-            <div id="carouselControls{{event.id}}" class="carousel slide mb-4 w-75" data-bs-ride="carousel">
+            <div id="carouselControls{{event.id}}" class="carousel mb-4 w-75" data-interval="false">
                 <div class="carousel-inner">
                     {% for f in photos %}
                     {%if forloop.first%}
@@ -26,11 +26,13 @@
                         </div>
                         {%endfor%}
                     </div>
-                    <a class="carousel-control-prev" href="#carouselControls" role="button" data-slide="prev">
+                    <a class="carousel-control-prev" href="#carouselControls{{event.id}}" role="button"
+                       data-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="sr-only">Previous</span>
                     </a>
-                    <a class="carousel-control-next" href="#carouselControls" role="button" data-slide="next">
+                    <a class="carousel-control-next" href="#carouselControls{{event.id}}" role="button"
+                       data-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="sr-only">Next</span>
                     </a>
@@ -39,7 +41,17 @@
                 {% if videos%}
                 <p class="card-text ml-3">Видеозаписи:</p>
                 <div id="player" class="mx-3"></div>
-                <script src="{% static 'js/myplayer.js' %}" type="text/javascript"></script>
+                <script>
+                    var player = new Playerjs({
+                    id:"player",
+                    file:[
+                        {% for video in videos%}
+                        {"title":"{{video.title}}","file":"{{video.video.url}}"},
+                        {%endfor%}
+                    ]
+                    });
+
+                </script>
                 {% endif %}
             </div>
             <div class="col-md-auto mt-2 ">
