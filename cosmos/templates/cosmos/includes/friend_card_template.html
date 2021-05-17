@@ -3,22 +3,23 @@
     <div class="row no-gutters">
         <div class="col-3 m-2 centered">
             {% if friend.photo %}
-            <img class="card-img rounded-circle" src="{{ friend.photo.url }}" style="width: 100px; height: 100px;">
-            {%else%}
-            <img class="card-img rounded-circle" src="{% static 'photo.png' %}" style="width: 100px; height: 100px;">
-            {%endif%}
+                <img class="card-img rounded-circle" src="{{ friend.photo.url }}" style="width: 100px; height: 100px;">
+            {% else %}
+                <img class="card-img rounded-circle" src="{% static 'photo.png' %}"
+                     style="width: 100px; height: 100px;">
+            {% endif %}
         </div>
         <div class="col-7 text-left">
             <div class="card-body mt-4">
-                <h5 class="card-title"><a href="{% url 'some_friend' friend.id%}">{{friend.name}}</a></h5>
+                <h5 class="card-title"><a href="{% url 'some_friend' friend.id %}">{{ friend.name }}</a></h5>
             </div>
         </div>
         <div class="col text-right mt-2">
             <li class="nav-item dropdown">
-                <a class="dropdown-toggle" id="navbarScrollingDropdown{{friend.id}}"
+                <a class="dropdown-toggle" id="navbarScrollingDropdown{{ friend.id }}"
                    data-bs-toggle="dropdown" aria-expanded="false">
                 </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown{{friend.id}}">
+                <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown{{ friend.id }}">
                     <li>
                         <form action="{% url 'edit_friend' friend.id %}">
                             <button type="submit" class="dropdown-item">Редактировать</button>
@@ -29,7 +30,7 @@
                     </li>
                     <li>
                         <button type="button" class="dropdown-item" data-bs-toggle="modal"
-                                data-bs-target="#staticBackdrop{{friend.id}}">Удалить
+                                data-bs-target="#staticBackdrop{{ friend.id }}">Удалить
                         </button>
                     </li>
                 </ul>
@@ -37,12 +38,12 @@
         </div>
 
 
-        <div class="modal fade" id="staticBackdrop{{friend.id}}" data-bs-backdrop="static" tabindex="-1" role="dialog"
-             aria-labelledby="staticBackdropLabel{{friend.id}}" aria-hidden="true">
+        <div class="modal fade" id="staticBackdrop{{ friend.id }}" data-bs-backdrop="static" tabindex="-1" role="dialog"
+             aria-labelledby="staticBackdropLabel{{ friend.id }}" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content bg-light">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel{{friend.id}}">Удаление друга</h5>
+                        <h5 class="modal-title" id="staticBackdropLabel{{ friend.id }}">Удаление друга</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">

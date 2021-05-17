@@ -37,8 +37,8 @@ class AddFrForm(ModelForm):
                 'class': 'form-control bg-light',
                 'rows': '3',
             }),
-            'date_birth': Input(attrs={'class': 'form-control bg-light'}),
-            'date_begin': Input(attrs={'class': 'form-control bg-light'}),
+            'date_birth': Input(attrs={'class': 'form-control bg-light', 'type': 'date'}),
+            'date_begin': Input(attrs={'class': 'form-control bg-light', 'type': 'date'}),
             'photo': Input(attrs={
                 'class': 'form-control-file',
                 'type': 'file',
@@ -66,7 +66,7 @@ class CreateEventForm(ModelForm):
                 'class': 'form-control bg-light mt-2',
                 'rows': '3',
             }),
-            'date': Input(attrs={'class': 'form-control bg-light mt-2'}),
+            'date': Input(attrs={'class': 'form-control bg-light mt-2', 'type': 'date'}),
             'points': Select(attrs={'class': 'form-control bg-light mt-2'}),
             'members': FilteredSelectMultiple(u'Участники', is_stacked=False),
         }

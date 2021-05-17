@@ -22,7 +22,7 @@
             {% for friend in f_list %}
             <li class="list-group-item list-group-item-light maybe-selected">
                 <input class="form-check-input ms-1 mt-2" type="checkbox" name="exported_friends" value={{friend.id}}>
-                <img class="ms-4 rounded-circle" src="{{ friend.photo_50 }}" style="width: 30px; height=30px;">
+                <img class="ms-4 rounded-circle" src="{{ friend.photo_50 }}" style="width: 30px; height: 30px;">
                 <span>{{friend.first_name}} {{friend.last_name}}</span>
             </li>
             {% endfor %}

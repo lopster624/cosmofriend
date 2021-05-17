@@ -1,4 +1,5 @@
 import datetime
+from operator import itemgetter
 
 import requests
 import vk
@@ -14,6 +15,7 @@ from django.views import View
 from engine.settings import SOCIAL_AUTH_VK_OAUTH2_KEY as CLIENT_ID, SOCIAL_AUTH_VK_OAUTH2_SECRET as CLIENT_SECRET
 from .forms import *
 from .models import *
+from .utils import get_statistic
 
 
 class Home(LoginRequiredMixin, View):
@@ -174,7 +176,6 @@ class CreateEvent(LoginRequiredMixin, View):
             new_event.save()
             if request.FILES:
                 for f in request.FILES.getlist('images'):
-                    print(f)
                     Photos(event=new_event, image=f).save()
                 for f in request.FILES.getlist('videos'):
                     file_format = re.findall(r"\.mp4$", f.name)
@@ -247,5 +248,34 @@ class SomeEvent(LoginRequiredMixin, View):
 class SomeFriend(LoginRequiredMixin, View):
     def get(self, request, friend_id):
         friend = Friends.objects.get(id=friend_id)
-        e_list = Events.objects.filter(user=request.user).filter(members__id__icontains=friend_id)
+        e_list = Events.objects.filter(user=request.user, members__id__iexact=friend_id)
         return render(request, 'cosmos/some_friend.html', context={'friend': friend, 'e_list': e_list})
+
+
+class Statistic(LoginRequiredMixin, View):
+    def get(self, request):
+        end_date = datetime.date.today()
+        start_date = end_date - datetime.timedelta(days=30)
+        stat_list = get_statistic(request, start_date, end_date)
+        return render(request, 'cosmos/stats.html', context={'stat_list': stat_list, 'period': 30})
+
+    def post(self, request):
+        period = int(request.POST.get('btnradio', None))
+        start_date, end_date, error = '', '', ''
+        if period == 0:
+            stat_list = get_statistic(request, all_the_time=True)
+        else:
+            if period == -1:
+                start_date = request.POST.get('date_begin', None)
+                end_date = request.POST.get('date_end', None)
+            else:
+                end_date = datetime.date.today()
+                start_date = end_date - datetime.timedelta(days=period)
+            stat_list = get_statistic(request, start_date, end_date)
+            if stat_list == -1:
+                error = "Введите корректную дату!"
+                stat_list = []
+
+        return render(request, 'cosmos/stats.html',
+                      context={'stat_list': stat_list, 'period': period, 'error': error, 'start_date': start_date,
+                               'end_date': end_date})

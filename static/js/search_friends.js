@@ -1,4 +1,4 @@
-﻿function searchAll(event){
+function searchAll(event){
     search_ask = event.target.value.toLowerCase()
     for (const element of document.getElementsByClassName('maybe-selected')) {
         if (!element.childNodes[element.childNodes.length-2].childNodes[3].innerText.toLowerCase().includes(search_ask)) {

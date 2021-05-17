@@ -2,99 +2,98 @@
 <div class="card bg-light mb-1 w-100">
     <div class="row g-1">
         <div class="p-4 col-11 maybe-selected">
-            <a href="{% url 'some_event' event.id %}"><h5 class="card-title ">{{event.title}}</h5></a>
-            <p class="card-text">{%if short%}{{event.report|truncatewords:15}}{%else%}{{event.report}}{%endif%}</p>
+            <a href="{% url 'some_event' event.id %}"><h5 class="card-title ">{{ event.title }}</h5></a>
+            <p class="card-text">
+                {% if short %}{{ event.report|truncatewords:15 }}{% else %}{{ event.report }}{% endif %}</p>
             <p class="card-text">Участники:
-                {%for member in event.members.all %}
-                <a href="{% url 'some_friend' member.id%}">{{member}}</a>{%if forloop.last%}.{%else%},{%endif%}
-                {%endfor%}
+                {% for member in event.members.all %}
+                    <a href="{% url 'some_friend' member.id %}">{{ member }}</a>{% if forloop.last %}.{% else %},
+                {% endif %}
+                {% endfor %}
             </p>
-            {% if event.date%}
-            <p class="card-text"><small class="text-muted">{{event.date}}</small></p>
-            {%endif%}
-            {%if photos%}
-            <p class="card-text">Фотографии:</p>
-            <div id="carouselControls{{event.id}}" class="carousel mb-4 w-75" data-bs-interval="false" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    {% for f in photos %}
-                    {%if forloop.first%}
-                    <div class="carousel-item active">
-                        {%else%}
-                        <div class="carousel-item">
-                            {%endif%}
-                            <img src="{{ f.image.url }}" class="d-block w-100">
-                        </div>
-                        {%endfor%}
+            {% if event.date %}
+                <p class="card-text"><small class="text-muted">{{ event.date }}</small></p>
+            {% endif %}
+            {% if photos %}
+                <p class="card-text">Фотографии:</p>
+                <div id="carouselControls{{ event.id }}" class="carousel mb-4 w-75" data-bs-interval="false"
+                     data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for f in photos %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ f.image.url }}" class="d-block w-100" alt="Фотография">
+                            </div>
+                        {% endfor %}
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselControls{{event.id}}"
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselControls{{ event.id }}"
                             data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Предыдущий</span>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselControls{{event.id}}"
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselControls{{ event.id }}"
                             data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Следующий</span>
                     </button>
                 </div>
-                {%endif%}
-                {% if videos%}
+            {% endif %}
+            {% if videos %}
                 <p class="card-text ms-3">Видеозаписи:</p>
                 <div id="player" class="mx-3"></div>
                 <script>
-                    var player = new Playerjs({
-                    id:"player",
-                    file:[
-                        {% for video in videos%}
-                        {"title":"{{video.title}}","file":"{{video.video.url}}"},
-                        {%endfor%}
-                    ]
+                    const player = new Playerjs({
+                        id: "player",
+                        file: [
+                            {% for video in videos%}
+                                {"title": "{{video.title}}", "file": "{{video.video.url}}"},
+                            {%endfor%}
+                        ]
                     });
                 </script>
-                {% endif %}
-            </div>
-            <div class="col-md-auto gy-2 ">
-                <li class="nav-item dropdown">
-                    <a class="dropdown-toggle" id="navbarScrollingDropdown{{event.id}}"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown{{event.id}}">
-                        <li>
-                            <form action="{% url 'edit_event' event.id %}">
-                                <button type="submit" class="dropdown-item">Редактировать</button>
-                            </form>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <button type="button" class="dropdown-item" data-bs-toggle="modal"
-                                    data-bs-target="#staticBackdrop{{event.id}}">Удалить
-                            </button>
-                        </li>
-                    </ul>
-                </li>
-            </div>
-            <div class="modal fade" id="staticBackdrop{{event.id}}" data-backdrop="static" tabindex="-1" role="dialog"
-                 aria-labelledby="staticBackdropLabel{{event.id}}" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content bg-light">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel{{event.id}}">Удаление события</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Стоп! То есть ты хочешь удалить это событие? Просто стереть все воспоминания о нем и позже
-                            забыть?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                            <form action="{% url 'delete_event' event.id %}">
-                                <button type="submit" class="btn btn-danger">Удалить событие</button>
-                            </form>
-                        </div>
+            {% endif %}
+        </div>
+        <div class="col-md-auto gy-2 ">
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" id="navbarScrollingDropdown{{ event.id }}"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown{{ event.id }}">
+                    <li>
+                        <form action="{% url 'edit_event' event.id %}">
+                            <button type="submit" class="dropdown-item">Редактировать</button>
+                        </form>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                data-bs-target="#staticBackdrop{{ event.id }}">Удалить
+                        </button>
+                    </li>
+                </ul>
+            </li>
+        </div>
+        <div class="modal fade" id="staticBackdrop{{ event.id }}" data-backdrop="static" tabindex="-1" role="dialog"
+             aria-labelledby="staticBackdropLabel{{ event.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content bg-light">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel{{ event.id }}">Удаление события</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Стоп! То есть ты хочешь удалить это событие? Просто стереть все воспоминания о нем и позже
+                        забыть?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <form action="{% url 'delete_event' event.id %}">
+                            <button type="submit" class="btn btn-danger">Удалить событие</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>

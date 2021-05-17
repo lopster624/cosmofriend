@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    Друзья
+{% endblock %}
+{% block content %}
+    {% include 'cosmos/includes/header_template.html' %}
+    <div>
+        <form enctype="multipart/form-data" action=" {% url 'statistic' %} "
+              class="card p-2 mb-2 w-50 bg-default" method="post" style="margin-left: 25%;">
+            {% csrf_token %}
+            <div class="btn-toolbar  mx-auto" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group mb-2 me-2" role="group" aria-label="Basic radio toggle button group"
+                     id="radio_fields">
+                    <input type="radio" class="btn-check" name="btnradio" value="0" id="btnradio1" autocomplete="off"
+                           {% if period == 0 %}checked{% endif %}>
+                    <label class="btn btn-outline-dark" for="btnradio1">Все время</label>
+
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" value="365" autocomplete="off"
+                           {% if period == 365 %}checked{% endif %}>
+                    <label class="btn btn-outline-dark" for="btnradio2">Год</label>
+
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio3" value="30" autocomplete="off"
+                           {% if period == 30 %}checked{% endif %}>
+                    <label class="btn btn-outline-dark" for="btnradio3">Месяц</label>
+
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio4" value="7" autocomplete="off"
+                           {% if period == 7 %}checked{% endif %}>
+                    <label class="btn btn-outline-dark" for="btnradio4">Неделя</label>
+
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio5" value="-1"
+                           {% if period == -1 %}checked{% endif %}
+                           autocomplete="off">
+                    <label class="btn btn-outline-dark" for="btnradio5">Произвольный период</label>
+                </div>
+                <div class="btn-group h-100" role="group" aria-label="Second group">
+                    <button type="submit" class="btn btn-outline-dark"><i class="bi bi-eye"></i></button>
+                </div>
+            </div>
+            <div id="date_fields" class="text-center {% if period != -1 %}d-none{% endif %}">
+                <label for="date_begin">С: </label>
+                <input type="date" id="date_begin" {% if start_date %}value="{{ start_date }}"{% endif %} name="date_begin"/>
+
+                <label for="date_end">По: </label>
+                <input type="date" id="date_end" {% if end_date %}value="{{ end_date }}"{% endif %} name="date_end"/>
+            </div>
+            {% if error %}
+                <div class="alert alert-danger mt-2">
+                    {{ error }}
+                </div>
+            {% endif %}
+        </form>
+    </div>
+    <div>
+        <table class="table w-50 bg-white" style="margin-left: 25%;">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col"></th>
+                <th scope="col">Имя</th>
+                <th scope="col">Событий за период</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for stat in stat_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <th scope="row">{% if stat.0.photo %}
+                        <img class="card-img rounded-circle" src="{{ stat.0.photo.url }}"
+                             style="width: 100px; height: 100px;">
+                    {% else %}
+                        <img class="card-img rounded-circle" src="{% static 'photo.png' %}"
+                             style="width: 100px; height: 100px;">
+                    {% endif %}</th>
+                    <td><h5 class="card-title"><a
+                            href="{% url 'some_friend' stat.0.id %}">{{ stat.0.name }}</a>
+                    </h5></td>
+                    <td>{{ stat.1 }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="{% static 'js/statistic_show_fields.js' %}" type="text/javascript"></script>
+{% endblock %}

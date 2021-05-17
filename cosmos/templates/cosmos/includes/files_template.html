@@ -1,6 +1,6 @@
 <div>
     {% for f in photos %}
-    <div id='{{f.id}}'class="me-1 mb-2 d-inline-block position-relative" style="width: 127px;">
+    <div id='{{f.id}}' class="me-1 mb-2 d-inline-block position-relative" style="width: 127px;">
         <button type="button" class="btn-close position-absolute top-0 end-0" onclick="put_pic_id('{{f.id}}')"
                 aria-label="Close"></button>
         <img src="{{ f.image.url }}" class="w-100 h-100"/>

@@ -1,6 +1,4 @@
-from django.contrib import admin
 from django.urls import path
-from django.urls import include
 from .views import *
 
 urlpatterns = [
@@ -19,4 +17,5 @@ urlpatterns = [
     path('events/create/', CreateEvent.as_view(), name='create_event'),
     path('events/delete/<int:event_id>/', DeleteEvent.as_view(), name='delete_event'),
     path('events/edit/<int:event_id>/', EditEvent.as_view(), name='edit_event'),
+    path('statistic/', Statistic.as_view(), name='statistic'),
 ]
