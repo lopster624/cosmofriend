@@ -1,7 +1,6 @@
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms import ModelForm, ImageField, FileInput, FileField, Select, ModelMultipleChoiceField
-from django.forms.widgets import Input, Textarea, CheckboxSelectMultiple
-
+from django.forms.widgets import Input, Textarea
 from .models import *
 
 
@@ -22,7 +21,7 @@ class CustomRegister(ModelForm):
 
 class AddFrForm(ModelForm):
     class Meta:
-        model = Friends
+        model = Friend
         fields = ['name', 'character', 'date_birth', 'date_begin', 'photo']
         labels = {
             'name': 'Имя',
@@ -52,13 +51,13 @@ class CreateEventForm(ModelForm):
     videos = FileField(label='Видео', required=False, widget=FileInput(attrs={'multiple': 'multiple'}))
     members = ModelMultipleChoiceField(
         label='Участники',
-        queryset=Friends.objects.all(),
+        queryset=Friend.objects.all(),
         required=True,
         widget=FilteredSelectMultiple('', is_stacked=False),
     )
 
     class Meta:
-        model = Events
+        model = Event
         fields = ['title', 'report', 'date', 'points', 'members']
         widgets = {
             'title': Input(attrs={'class': 'form-control bg-light mt-2'}),
@@ -84,4 +83,4 @@ class CreateEventForm(ModelForm):
         current_user = kwargs.pop('current_user', None)
         super(CreateEventForm, self).__init__(*args, **kwargs)
         if current_user:
-            self.fields['members'].queryset = Friends.objects.filter(user=current_user)
+            self.fields['members'].queryset = Friend.objects.filter(user=current_user)

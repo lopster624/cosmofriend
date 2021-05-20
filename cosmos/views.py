@@ -1,13 +1,10 @@
 import datetime
-from operator import itemgetter
-
 import requests
 import vk
 from django.contrib import auth
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -15,10 +12,10 @@ from django.views import View
 from engine.settings import SOCIAL_AUTH_VK_OAUTH2_KEY as CLIENT_ID, SOCIAL_AUTH_VK_OAUTH2_SECRET as CLIENT_SECRET
 from .forms import *
 from .models import *
-from .utils import get_statistic
+from .utils import get_statistic, save_videos
 
 
-class Home(LoginRequiredMixin, View):
+class HomeView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'cosmos/home.html', context={})
 
@@ -38,7 +35,7 @@ def get_code(request):
     return redirect('import_friends')
 
 
-class ImportFriends(LoginRequiredMixin, View):
+class ImportFriendsView(LoginRequiredMixin, View):
     def get(self, request):
         access_token = request.session['access_token']
         session = vk.Session(access_token=access_token)
@@ -52,78 +49,81 @@ class ImportFriends(LoginRequiredMixin, View):
         chosen_friends = [int(friend_id) for friend_id in chosen_friends]
         friends_list = request.session['friends_list']
         for user in friends_list:
-            if user.get('id') in chosen_friends:
-                new_friend = Friends(name=f"{user.get('first_name')} {user.get('last_name')}", user=request.user)
-                character = user.get('about')
-                if character is not None:
-                    new_friend.character = character
-                date_of_birth = user.get('bdate')
-                if date_of_birth:
-                    date_of_birth = date_of_birth.split('.')
-                    if len(date_of_birth) == 3:
-                        date_of_birth = datetime.date(int(date_of_birth[2]), int(date_of_birth[1]),
-                                                      int(date_of_birth[0]))
-                        new_friend.date_birth = date_of_birth
-                new_friend.get_remote_image(id_user=user.get('id'), url=user.get('photo_max'))
+            if not user.get('id') in chosen_friends:
+                continue
+            new_friend = Friend(name=f"{user.get('first_name')} {user.get('last_name')}", user=request.user)
+            character = user.get('about')
+            if character is not None:
+                new_friend.character = character
+            date_of_birth = user.get('bdate')
+            if date_of_birth:
+                date_of_birth = date_of_birth.split('.')
+                if len(date_of_birth) == 3:
+                    date_of_birth = datetime.date(int(date_of_birth[2]), int(date_of_birth[1]),
+                                                  int(date_of_birth[0]))
+                    new_friend.date_birth = date_of_birth
+            new_friend.get_remote_image(id_user=user.get('id'), url=user.get('photo_max'))
         return redirect('friends')
 
 
-class FriendsList(LoginRequiredMixin, View):
+class FriendsListView(LoginRequiredMixin, View):
     def get(self, request):
-        f_list = Friends.objects.filter(user=request.user)
+        f_list = Friend.objects.filter(user=request.user)
         redirect_uri = request.build_absolute_uri(reverse('get_code'))
-        return render(request, 'cosmos/friends.html',
-                      context={'f_list': f_list, 'client_id': CLIENT_ID, 'redirect_uri': redirect_uri})
+        return render(
+            request, 'cosmos/friends.html',
+            context={'f_list': f_list, 'client_id': CLIENT_ID, 'redirect_uri': redirect_uri}
+        )
 
 
-class EventsList(LoginRequiredMixin, View):
+class EventsListView(LoginRequiredMixin, View):
     def get(self, request):
-        e_list = Events.objects.filter(user=request.user)
+        e_list = Event.objects.filter(user=request.user)
         return render(request, 'cosmos/events.html', context={'e_list': e_list, 'short': True})
 
 
-class AddFriends(LoginRequiredMixin, View):
+class AddFriendsView(LoginRequiredMixin, View):
     def get(self, request):
         form = AddFrForm()
         return render(request, 'cosmos/add_friends.html', context={'form': form})
 
     def post(self, request):
         bound_form = AddFrForm(request.POST, request.FILES)
-        if bound_form.is_valid():
-            friend = bound_form.save(commit=False)
-            friend.user = request.user
-            if request.FILES:
-                friend.photo = request.FILES['photo']
-            friend.save()
-            return redirect('friends')
-        else:
+        if not bound_form.is_valid():
             return render(request, 'cosmos/add_friends.html', context={'form': bound_form})
+        friend = bound_form.save(commit=False)
+        friend.user = request.user
+        if request.FILES:
+            friend.photo = request.FILES['photo']
+        friend.save()
+        return redirect('friends')
 
 
-class Registration(View):
+class RegistrationView(View):
     def get(self, request):
         form = CustomRegister()
         return render(request, 'register.html', context={'form': form})
 
     def post(self, request):
         bound_form = CustomRegister(request.POST)
-        if bound_form.is_valid():
-            new_user = User.objects.create_user(
-                username=request.POST['username'],
-                password=request.POST['password'],
-                first_name=request.POST['first_name'],
-                last_name=request.POST['last_name'])
-            new_user.set_password(request.POST['password'])
-            new_user.save()
-            login(request, new_user)
-            return redirect('home')
-        else:
+        if not bound_form.is_valid():
             return render(request, 'register.html', context={'form': bound_form})
+        new_user = User.objects.create_user(
+            username=request.POST['username'],
+            password=request.POST['password'],
+            first_name=request.POST['first_name'],
+            last_name=request.POST['last_name'])
+        new_user.set_password(request.POST['password'])
+        new_user.save()
+        login(request, new_user)
+        return redirect('home')
 
 
-class DeleteFriend(LoginRequiredMixin, View):
+class DeleteFriendView(LoginRequiredMixin, View):
     def get(self, request, friend_id):
-        friend = Friends.objects.get(id=friend_id)
+        friend = Friend.objects.get(id=friend_id)
+        if request.user != friend.user:
+            return render(request, 'cosmos/access_error.html', context={'error': 'Данный друг не существует.'})
         friend.delete()
         # удаляет всех пользователей
         # for i in Friends.objects.filter(user=request.user):
@@ -131,69 +131,61 @@ class DeleteFriend(LoginRequiredMixin, View):
         return redirect('friends')
 
 
-class DeleteEvent(LoginRequiredMixin, View):
+class DeleteEventView(LoginRequiredMixin, View):
     def get(self, request, event_id):
-        friend = Events.objects.get(id=event_id)
-        friend.delete()
+        event = Event.objects.get(id=event_id)
+        if request.user != event.user:
+            return render(request, 'cosmos/access_error.html', context={'error': 'Данное событие не существует.'})
+        event.delete()
         return redirect('events')
 
 
-class EditFriend(LoginRequiredMixin, View):
+class EditFriendView(LoginRequiredMixin, View):
     def get(self, request, friend_id):
-        friend = Friends.objects.get(id=friend_id)
+        friend = Friend.objects.get(id=friend_id)
+        if request.user != friend.user:
+            return render(request, 'cosmos/access_error.html', context={'error': 'Данный друг не существует.'})
         bound_form = AddFrForm(instance=friend)
         return render(request, 'cosmos/edit_friend.html', context={'form': bound_form, 'friend': friend})
 
     def post(self, request, friend_id):
-        friend = Friends.objects.get(id=friend_id)
+        friend = Friend.objects.get(id=friend_id)
         bound_form = AddFrForm(request.POST, request.FILES, instance=friend)
-        if bound_form.is_valid():
-            friend = bound_form.save(commit=False)
-            if request.FILES:
-                friend.photo = request.FILES['photo']
-            friend.save()
-            return redirect('friends')
-        else:
+        if not bound_form.is_valid():
             return render(request, 'cosmos/add_friends.html', context={'form': bound_form, 'friend': friend})
+        friend = bound_form.save(commit=False)
+        if request.FILES:
+            friend.photo = request.FILES['photo']
+        friend.save()
+        return redirect('friends')
 
 
-class CreateEvent(LoginRequiredMixin, View):
+class CreateEventView(LoginRequiredMixin, View):
     def get(self, request):
         form = CreateEventForm(current_user=request.user)
         return render(request, 'cosmos/create_event.html', context={'form': form})
 
     def post(self, request):
         bound_form = CreateEventForm(request.POST, request.FILES)
-        if bound_form.is_valid():
-            new_event = bound_form.save(commit=False)
-            new_event.user = request.user
-            new_event.save()
-            for mem in request.POST.getlist('members'):
-                new_event.members.add(mem)
-                friend = Friends.objects.get(id=mem)
-                friend.points += 1
-                friend.save()
-            new_event.save()
-            if request.FILES:
-                for f in request.FILES.getlist('images'):
-                    Photos(event=new_event, image=f).save()
-                for f in request.FILES.getlist('videos'):
-                    file_format = re.findall(r"\.mp4$", f.name)
-                    if file_format:
-                        video = Videos(event=new_event, video=f)
-                        video.save()
-                        video.title = video.video.name[18:]
-                        video.save()
-            return redirect('some_event', new_event.id)
-        else:
+        if not bound_form.is_valid():
             return render(request, 'cosmos/create_event.html', context={'form': bound_form})
+        new_event = bound_form.save(commit=False)
+        new_event.user = request.user
+        new_event.save()
+        for mem in request.POST.getlist('members'):
+            new_event.members.add(mem)
+        new_event.save()
+        save_videos(request, new_event)
+        return redirect('some_event', new_event.id)
 
 
-class EditEvent(LoginRequiredMixin, View):
+class EditEventView(LoginRequiredMixin, View):
     def get(self, request, event_id):
-        event = Events.objects.get(id=event_id)
-        photos = Photos.objects.filter(event=event_id)
-        videos = Videos.objects.filter(event=event_id)
+        event = Event.objects.get(id=event_id)
+        if request.user != event.user:
+            return render(request, 'cosmos/access_error.html', context={'error': 'Данное событие не существует.'})
+        photos = Photo.objects.filter(event=event_id)
+        videos = Video.objects.filter(event=event_id)
         bound_form = CreateEventForm(instance=event, current_user=request.user)
         bound_form.fields['images'].label = "Добавить новые фотографии"
         bound_form.fields['videos'].label = "Добавить новые видео"
@@ -201,58 +193,52 @@ class EditEvent(LoginRequiredMixin, View):
                       context={'form': bound_form, 'photos': photos, 'event': event, 'videos': videos})
 
     def post(self, request, event_id):
-        event = Events.objects.get(id=event_id)
+        event = Event.objects.get(id=event_id)
         bound_form = CreateEventForm(request.POST, request.FILES, instance=event, current_user=request.user)
-        if bound_form.is_valid():
-            new_event = bound_form.save(commit=False)
-            new_event.save()
-            for mem in request.POST.getlist('members'):
-                new_event.members.add(mem)
-            new_event.save()
-            pictures_on_delete = request.POST.get('delete_photos', None)
-            if pictures_on_delete:
-                pictures_on_delete = pictures_on_delete.split()
-                for pic_id in pictures_on_delete:
-                    current_picture = Photos.objects.get(id=int(pic_id))
-                    current_picture.delete()
-            videos_on_delete = request.POST.get('delete_videos', None)
-            if videos_on_delete:
-                videos_on_delete = videos_on_delete.split()
-                for vid_id in videos_on_delete:
-                    current_video = Videos.objects.get(id=int(vid_id))
-                    current_video.delete()
-
-            if request.FILES:
-                for f in request.FILES.getlist('images'):
-                    Photos(event=new_event, image=f).save()
-                for f in request.FILES.getlist('videos'):
-                    file_format = re.findall(r"\.mp4$", f.name)
-                    if file_format:
-                        video = Videos(event=new_event, video=f)
-                        video.save()
-                        video.title = video.video.name[18:]
-                        video.save()
-            return redirect('some_event', new_event.id)
-        else:
+        if not bound_form.is_valid():
             return render(request, 'cosmos/edit_event.html', context={'form': bound_form, 'event': event})
+        new_event = bound_form.save(commit=False)
+        new_event.save()
+        new_event.members.clear()
+        for mem in request.POST.getlist('members'):
+            new_event.members.add(mem)
+        new_event.save()
+        pictures_on_delete = request.POST.get('delete_photos', None)
+        if pictures_on_delete:
+            pictures_on_delete = pictures_on_delete.split()
+            for pic_id in pictures_on_delete:
+                current_picture = Photo.objects.get(id=int(pic_id))
+                current_picture.delete()
+        videos_on_delete = request.POST.get('delete_videos', None)
+        if videos_on_delete:
+            videos_on_delete = videos_on_delete.split()
+            for vid_id in videos_on_delete:
+                current_video = Video.objects.get(id=int(vid_id))
+                current_video.delete()
+        save_videos(request, new_event)
+        return redirect('some_event', new_event.id)
 
 
-class SomeEvent(LoginRequiredMixin, View):
+class SomeEventView(LoginRequiredMixin, View):
     def get(self, request, event_id):
-        event = Events.objects.get(id=event_id)
-        photos = Photos.objects.filter(event=event_id)
-        videos = Videos.objects.filter(event=event_id)
+        event = Event.objects.get(id=event_id)
+        if request.user != event.user:
+            return render(request, 'cosmos/access_error.html', context={'error': 'Данное событие не существует.'})
+        photos = Photo.objects.filter(event=event_id)
+        videos = Video.objects.filter(event=event_id)
         return render(request, 'cosmos/some_event.html', context={'photos': photos, 'event': event, 'videos': videos})
 
 
-class SomeFriend(LoginRequiredMixin, View):
+class SomeFriendView(LoginRequiredMixin, View):
     def get(self, request, friend_id):
-        friend = Friends.objects.get(id=friend_id)
-        e_list = Events.objects.filter(user=request.user, members__id__iexact=friend_id)
+        friend = Friend.objects.get(id=friend_id)
+        if request.user != friend.user:
+            return render(request, 'cosmos/access_error.html', context={'error': 'Данный друг не существует.'})
+        e_list = Event.objects.filter(user=request.user, members__id__iexact=friend_id)
         return render(request, 'cosmos/some_friend.html', context={'friend': friend, 'e_list': e_list})
 
 
-class Statistic(LoginRequiredMixin, View):
+class StatisticView(LoginRequiredMixin, View):
     def get(self, request):
         end_date = datetime.date.today()
         start_date = end_date - datetime.timedelta(days=30)
