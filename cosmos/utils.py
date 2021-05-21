@@ -25,15 +25,15 @@ def get_statistic(request, start_date=None, end_date=None, all_the_time=None):
     return sorted(stat_list, key=itemgetter(1), reverse=True)
 
 
-def save_videos(request, new_event):
+def save_files(request, new_event):
     if not request.FILES:
         return
     for f in request.FILES.getlist('images'):
         Photo(event=new_event, image=f).save()
-    for f in request.FILES.getlist('videos'):
-        file_format = re.findall(r"\.mp4$", f.name)
+    for v in request.FILES.getlist('videos'):
+        file_format = re.findall(r"\.mp4$", v.name)
         if file_format:
-            video = Video(event=new_event, video=f)
+            video = Video(event=new_event, video=v)
             video.save()
             video.title = video.video.name.split('/')[-1]
             video.save()

@@ -7,4 +7,9 @@ function show_fields() {
     }
 }
 
+function submit_form() {
+    let form = document.getElementById('form');
+    form.submit();
+}
+
 document.getElementById('radio_fields').addEventListener('click', show_fields);

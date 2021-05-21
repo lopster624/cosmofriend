@@ -1,4 +1,6 @@
 import datetime
+import uuid
+
 import requests
 import vk
 from django.contrib import auth
@@ -12,7 +14,7 @@ from django.views import View
 from engine.settings import SOCIAL_AUTH_VK_OAUTH2_KEY as CLIENT_ID, SOCIAL_AUTH_VK_OAUTH2_SECRET as CLIENT_SECRET
 from .forms import *
 from .models import *
-from .utils import get_statistic, save_videos
+from .utils import get_statistic, save_files
 
 
 class HomeView(LoginRequiredMixin, View):
@@ -175,7 +177,7 @@ class CreateEventView(LoginRequiredMixin, View):
         for mem in request.POST.getlist('members'):
             new_event.members.add(mem)
         new_event.save()
-        save_videos(request, new_event)
+        save_files(request, new_event)
         return redirect('some_event', new_event.id)
 
 
@@ -215,7 +217,7 @@ class EditEventView(LoginRequiredMixin, View):
             for vid_id in videos_on_delete:
                 current_video = Video.objects.get(id=int(vid_id))
                 current_video.delete()
-        save_videos(request, new_event)
+        save_files(request, new_event)
         return redirect('some_event', new_event.id)
 
 
@@ -265,3 +267,38 @@ class StatisticView(LoginRequiredMixin, View):
         return render(request, 'cosmos/stats.html',
                       context={'stat_list': stat_list, 'period': period, 'error': error, 'start_date': start_date,
                                'end_date': end_date})
+
+
+class CreateLinkView(LoginRequiredMixin, View):
+    def get(self, request, event_id):
+        event = Event.objects.get(id=event_id)
+        if request.user != event.user:
+            return render(request, 'cosmos/access_error.html', context={'error': 'Данное событие не существует.'})
+        token = uuid.uuid4()
+        sharelink = request.build_absolute_uri(reverse('home')) + f'sharelink/{token}/'
+        ShareLink(
+            token=token,
+            event=event,
+            date_of_die=datetime.datetime.now() + datetime.timedelta(days=1)
+        ).save()
+        photos = Photo.objects.filter(event=event_id)
+        videos = Video.objects.filter(event=event_id)
+        return render(request, 'cosmos/some_event.html',
+                      context={'photos': photos, 'event': event, 'videos': videos, 'sharelink': sharelink})
+
+
+class ImportEventView(LoginRequiredMixin, View):
+    def get(self, request, token):
+        link_object = ShareLink.objects.get(token=token)
+        event = link_object.event
+        new_event = Event(title=event.title, user=request.user, date=event.date, report=event.report)
+        new_event.save()
+        photos = Photo.objects.filter(event=event.id)
+        for pic in photos:
+            Photo(event=new_event, image=pic.image).save()
+        videos = Video.objects.filter(event=event.id)
+        for vid in videos:
+            Video(event=new_event, video=vid.video, title=vid.title).save()
+        bound_form = CreateEventForm(instance=new_event, current_user=request.user)
+        return render(request, 'cosmos/edit_event.html',
+                      context={'form': bound_form, 'photos': photos, 'event': new_event, 'videos': videos})

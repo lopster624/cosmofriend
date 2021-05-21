@@ -55,7 +55,7 @@ class Event(models.Model):
     title = models.CharField('Название события', max_length=50)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField('Дата', blank=True, null=True)
-    points = models.IntegerField('Оценка', default=Rating.AWESOME, choices=Rating.choices)
+    points = models.IntegerField('Оценка', default=Rating.AWESOME, blank=True, choices=Rating.choices)
     members = models.ManyToManyField(Friend)
     report = models.TextField('Описание', blank=True, null=True)
 
