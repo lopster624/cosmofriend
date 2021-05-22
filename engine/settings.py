@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'cosmos',
     'social_django',
     'django_unused_media',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -120,7 +121,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -138,3 +139,7 @@ MEDIA_URL = '/media/'
 # секретные ключи, полученные из Вконтакте
 SOCIAL_AUTH_VK_OAUTH2_KEY = '7816102'
 SOCIAL_AUTH_VK_OAUTH2_SECRET = 'N769NM5fxjQjJ0tWkzgM'
+
+CRONJOBS = [
+    ('*/5 * * * *', 'python /home/myproject/manage.py delete_sharelinks')
+]

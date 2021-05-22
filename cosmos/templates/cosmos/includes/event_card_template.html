@@ -1,5 +1,5 @@
 {% load static %}
-<div class="card bg-light mb-1 w-100">
+<div class="card bg-light {% if event.date == today %}border-info{% endif %} {% if event.date < today %}border-dark{% endif %} mb-2 w-100">
     <div class="row g-1">
         <div class="p-4 col-11 maybe-selected">
             <a href="{% url 'some_event' event.id %}"><h5 class="card-title ">{{ event.title }}</h5></a>
@@ -117,8 +117,10 @@
         </div>
     </div>
 </div>
-<script>
-    var exampleEl = document.getElementById('button-addon2')
-    var popover = new bootstrap.Popover(exampleEl, animation = true)
-</script>
+{% if sharelink %}
+    <script>
+        var exampleEl = document.getElementById('button-addon2')
+        var popover = new bootstrap.Popover(exampleEl, animation = true)
+    </script>
+{% endif %}
 <script src="{% static 'js/copy_link.js' %}" type="text/javascript"></script>

@@ -19,7 +19,15 @@ from .utils import get_statistic, save_files
 
 class HomeView(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'cosmos/home.html', context={})
+        top_friends = get_statistic(request, end_date=datetime.date.today(),
+                                    start_date=datetime.date.today().replace(day=1))
+        if len(top_friends) > 3:
+            top_friends = top_friends[:3]
+        future_events = Event.objects.filter(date__gt=datetime.date.today()).reverse()
+        today_events = Event.objects.filter(date__exact=datetime.date.today())
+        return render(request, 'cosmos/home.html',
+                      context={'stat_list': top_friends, 'future_events': future_events, 'today_events': today_events,
+                               'short': True, 'today': datetime.date.today()})
 
 
 def logout(request):
@@ -81,7 +89,8 @@ class FriendsListView(LoginRequiredMixin, View):
 class EventsListView(LoginRequiredMixin, View):
     def get(self, request):
         e_list = Event.objects.filter(user=request.user)
-        return render(request, 'cosmos/events.html', context={'e_list': e_list, 'short': True})
+        return render(request, 'cosmos/events.html',
+                      context={'e_list': e_list, 'short': True, 'today': datetime.date.today()})
 
 
 class AddFriendsView(LoginRequiredMixin, View):
@@ -192,7 +201,8 @@ class EditEventView(LoginRequiredMixin, View):
         bound_form.fields['images'].label = "Добавить новые фотографии"
         bound_form.fields['videos'].label = "Добавить новые видео"
         return render(request, 'cosmos/edit_event.html',
-                      context={'form': bound_form, 'photos': photos, 'event': event, 'videos': videos})
+                      context={'form': bound_form, 'photos': photos, 'event': event, 'videos': videos,
+                               'today': datetime.date.today()})
 
     def post(self, request, event_id):
         event = Event.objects.get(id=event_id)
@@ -228,7 +238,8 @@ class SomeEventView(LoginRequiredMixin, View):
             return render(request, 'cosmos/access_error.html', context={'error': 'Данное событие не существует.'})
         photos = Photo.objects.filter(event=event_id)
         videos = Video.objects.filter(event=event_id)
-        return render(request, 'cosmos/some_event.html', context={'photos': photos, 'event': event, 'videos': videos})
+        return render(request, 'cosmos/some_event.html',
+                      context={'photos': photos, 'event': event, 'videos': videos, 'today': datetime.date.today()})
 
 
 class SomeFriendView(LoginRequiredMixin, View):
@@ -279,8 +290,9 @@ class CreateLinkView(LoginRequiredMixin, View):
         ShareLink(
             token=token,
             event=event,
-            date_of_die=datetime.datetime.now() + datetime.timedelta(days=1)
+            date_of_die=datetime.datetime.now()
         ).save()
+        print(datetime.datetime.now())
         photos = Photo.objects.filter(event=event_id)
         videos = Video.objects.filter(event=event_id)
         return render(request, 'cosmos/some_event.html',

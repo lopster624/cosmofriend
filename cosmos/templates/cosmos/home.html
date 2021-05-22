@@ -2,7 +2,63 @@
 {% block title %}
     {{ block.super }}
 {% endblock %}
+{% load static %}
 {% block content %}
-{% include 'cosmos/includes/header_template.html' %}
-{% include 'cosmos/includes/add_event_template.html' %}
+    {% include 'cosmos/includes/header_template.html' %}
+    {% include 'cosmos/includes/add_event_template.html' %}
+    <div class="container">
+        <div class="row ">
+            <div class="col-6 mt-2">
+                <div class="border-primary card-body card bg-white">
+                    <h4 class="card-title">Топ друзей</h4>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col"></th>
+                            <th scope="col">Имя</th>
+                            <th scope="col">Событий за месяц</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for stat in stat_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <th scope="row">{% if stat.0.photo %}
+                                    <img class="card-img rounded-circle" src="{{ stat.0.photo.url }}"
+                                         style="width: 100px; height: 100px;">
+                                {% else %}
+                                    <img class="card-img rounded-circle" src="{% static 'photo.png' %}"
+                                         style="width: 100px; height: 100px;">
+                                {% endif %}</th>
+                                <td><h5 class="card-title"><a
+                                        href="{% url 'some_friend' stat.0.id %}">{{ stat.0.name }}</a>
+                                </h5></td>
+                                <td>{{ stat.1 }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-5 pe-4">
+                {% if today_events %}
+                    <div class="mb-2">
+                        <h4 class="card-title">Сегодняшние события</h4>
+                        {% for event in today_events %}
+                            {% include 'cosmos/includes/event_card_template.html' %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if future_events %}
+                    <div>
+                        <h4 class="card-title">Запланированные события</h4>
+                        {% for event in future_events %}
+                            {% include 'cosmos/includes/event_card_template.html' %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
