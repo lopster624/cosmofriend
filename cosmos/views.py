@@ -290,7 +290,7 @@ class CreateLinkView(LoginRequiredMixin, View):
         ShareLink(
             token=token,
             event=event,
-            date_of_die=datetime.datetime.now()
+            date_of_die=datetime.datetime.now() + datetime.timedelta(days=1)
         ).save()
         print(datetime.datetime.now())
         photos = Photo.objects.filter(event=event_id)
