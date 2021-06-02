@@ -301,7 +301,10 @@ class CreateLinkView(LoginRequiredMixin, View):
 
 class ImportEventView(LoginRequiredMixin, View):
     def get(self, request, token):
-        link_object = ShareLink.objects.get(token=token)
+        try:
+            link_object = ShareLink.objects.get(token=token)
+        except ShareLink.DoesNotExist:
+            return render(request, 'cosmos/access_error.html', context={'error': 'Данное событие не существует.'})
         event = link_object.event
         new_event = Event(title=event.title, user=request.user, date=event.date, report=event.report)
         new_event.save()
