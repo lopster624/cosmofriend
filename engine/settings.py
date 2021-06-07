@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'social_django',
     'django_unused_media',
     'django_crontab',
+    'django_extensions',
+    'graphviz',
 ]
 
 MIDDLEWARE = [
@@ -140,6 +142,8 @@ MEDIA_URL = '/media/'
 SOCIAL_AUTH_VK_OAUTH2_KEY = '7816102'
 SOCIAL_AUTH_VK_OAUTH2_SECRET = 'N769NM5fxjQjJ0tWkzgM'
 
-CRONJOBS = [
-    ('*/5 * * * *', 'python /home/myproject/manage.py delete_sharelinks')
-]
+GRAPH_MODELS = {
+    'all_applications': True,
+    'group_models': True,
+    'app_labels': ["cosmos"],
+}

@@ -22,12 +22,12 @@ select {
 
 .selector-clearall{
     display: block;
-    align="center";
+    text-align: center;
 }
 
 .selector-chooseall{
     display: block;
-    align="center";
+    text-align: center;
 }
 
 #id_members_input{

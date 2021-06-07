@@ -90,7 +90,7 @@ class Photo(models.Model):
 class Video(models.Model):
     video = models.FileField(upload_to='videos/%Y/%m/%d')
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    title = models.CharField('Название события', max_length=50, blank=True, null=True)
+    title = models.CharField('Название видео', max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.video.name

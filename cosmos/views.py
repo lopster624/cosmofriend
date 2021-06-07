@@ -95,11 +95,11 @@ class EventsListView(LoginRequiredMixin, View):
 
 class AddFriendsView(LoginRequiredMixin, View):
     def get(self, request):
-        form = AddFrForm()
+        form = AddFriendForm()
         return render(request, 'cosmos/add_friends.html', context={'form': form})
 
     def post(self, request):
-        bound_form = AddFrForm(request.POST, request.FILES)
+        bound_form = AddFriendForm(request.POST, request.FILES)
         if not bound_form.is_valid():
             return render(request, 'cosmos/add_friends.html', context={'form': bound_form})
         friend = bound_form.save(commit=False)
@@ -136,9 +136,6 @@ class DeleteFriendView(LoginRequiredMixin, View):
         if request.user != friend.user:
             return render(request, 'cosmos/access_error.html', context={'error': 'Данный друг не существует.'})
         friend.delete()
-        # удаляет всех пользователей
-        # for i in Friends.objects.filter(user=request.user):
-        #    i.delete()
         return redirect('friends')
 
 
@@ -156,19 +153,19 @@ class EditFriendView(LoginRequiredMixin, View):
         friend = Friend.objects.get(id=friend_id)
         if request.user != friend.user:
             return render(request, 'cosmos/access_error.html', context={'error': 'Данный друг не существует.'})
-        bound_form = AddFrForm(instance=friend)
+        bound_form = AddFriendForm(instance=friend)
         return render(request, 'cosmos/edit_friend.html', context={'form': bound_form, 'friend': friend})
 
     def post(self, request, friend_id):
         friend = Friend.objects.get(id=friend_id)
-        bound_form = AddFrForm(request.POST, request.FILES, instance=friend)
+        bound_form = AddFriendForm(request.POST, request.FILES, instance=friend)
         if not bound_form.is_valid():
             return render(request, 'cosmos/add_friends.html', context={'form': bound_form, 'friend': friend})
         friend = bound_form.save(commit=False)
         if request.FILES:
             friend.photo = request.FILES['photo']
         friend.save()
-        return redirect('friends')
+        return redirect('some_friend', friend.id)
 
 
 class CreateEventView(LoginRequiredMixin, View):
@@ -201,14 +198,16 @@ class EditEventView(LoginRequiredMixin, View):
         bound_form.fields['images'].label = "Добавить новые фотографии"
         bound_form.fields['videos'].label = "Добавить новые видео"
         return render(request, 'cosmos/edit_event.html',
-                      context={'form': bound_form, 'photos': photos, 'event': event, 'videos': videos,
-                               'today': datetime.date.today()})
+                      context={'form': bound_form, 'photos': photos, 'event': event, 'videos': videos})
 
     def post(self, request, event_id):
         event = Event.objects.get(id=event_id)
         bound_form = CreateEventForm(request.POST, request.FILES, instance=event, current_user=request.user)
         if not bound_form.is_valid():
-            return render(request, 'cosmos/edit_event.html', context={'form': bound_form, 'event': event})
+            photos = Photo.objects.filter(event=event_id)
+            videos = Video.objects.filter(event=event_id)
+            return render(request, 'cosmos/edit_event.html',
+                          context={'form': bound_form, 'event': event, 'photos': photos, 'videos': videos})
         new_event = bound_form.save(commit=False)
         new_event.save()
         new_event.members.clear()
@@ -285,14 +284,19 @@ class CreateLinkView(LoginRequiredMixin, View):
         event = Event.objects.get(id=event_id)
         if request.user != event.user:
             return render(request, 'cosmos/access_error.html', context={'error': 'Данное событие не существует.'})
-        token = uuid.uuid4()
+        try:
+            link_object = ShareLink.objects.get(event=event)
+            link_object.date_of_die = datetime.datetime.now() + datetime.timedelta(days=1)
+            link_object.save()
+            token = link_object.token
+        except ShareLink.DoesNotExist:
+            token = uuid.uuid4()
+            ShareLink(
+                token=token,
+                event=event,
+                date_of_die=datetime.datetime.now() + datetime.timedelta(days=1)
+            ).save()
         sharelink = request.build_absolute_uri(reverse('home')) + f'sharelink/{token}/'
-        ShareLink(
-            token=token,
-            event=event,
-            date_of_die=datetime.datetime.now() + datetime.timedelta(days=1)
-        ).save()
-        print(datetime.datetime.now())
         photos = Photo.objects.filter(event=event_id)
         videos = Video.objects.filter(event=event_id)
         return render(request, 'cosmos/some_event.html',
@@ -307,13 +311,44 @@ class ImportEventView(LoginRequiredMixin, View):
             return render(request, 'cosmos/access_error.html', context={'error': 'Данное событие не существует.'})
         event = link_object.event
         new_event = Event(title=event.title, user=request.user, date=event.date, report=event.report)
-        new_event.save()
         photos = Photo.objects.filter(event=event.id)
-        for pic in photos:
-            Photo(event=new_event, image=pic.image).save()
         videos = Video.objects.filter(event=event.id)
-        for vid in videos:
-            Video(event=new_event, video=vid.video, title=vid.title).save()
         bound_form = CreateEventForm(instance=new_event, current_user=request.user)
-        return render(request, 'cosmos/edit_event.html',
-                      context={'form': bound_form, 'photos': photos, 'event': new_event, 'videos': videos})
+        return render(request, 'cosmos/import_event.html',
+                      context={'form': bound_form, 'photos': photos, 'event': new_event, 'videos': videos,
+                               'token': token})
+
+    def post(self, request, token):
+        bound_form = CreateEventForm(request.POST, request.FILES)
+        try:
+            link_object = ShareLink.objects.get(token=token)
+        except ShareLink.DoesNotExist:
+            return render(request, 'cosmos/access_error.html', context={'error': 'Данное событие не существует.'})
+        orig_event = link_object.event
+        photos = Photo.objects.filter(event=orig_event.id)
+        videos = Video.objects.filter(event=orig_event.id)
+        if not bound_form.is_valid():
+            return render(request, 'cosmos/import_event.html',
+                          context={'form': bound_form, 'photos': photos, 'event': bound_form, 'videos': videos,
+                                   'token': token})
+        new_event = bound_form.save(commit=False)
+        new_event.user = request.user
+        new_event.save()
+        new_event.members.clear()
+        for mem in request.POST.getlist('members'):
+            new_event.members.add(mem)
+        new_event.save()
+        pictures_on_delete = request.POST.get('delete_photos', None)
+        if pictures_on_delete:
+            pictures_on_delete = [int(i) for i in pictures_on_delete.split()]
+        for pic in photos:
+            if pic.id not in pictures_on_delete:
+                Photo(event=new_event, image=pic.image).save()
+        videos_on_delete = request.POST.get('delete_videos', None)
+        if videos_on_delete:
+            videos_on_delete = [int(i) for i in videos_on_delete.split()]
+        for vid in videos:
+            if vid.id not in videos_on_delete:
+                Video(event=new_event, video=vid.video, title=vid.title).save()
+        save_files(request, new_event)
+        return redirect('some_event', new_event.id)

@@ -19,7 +19,7 @@ class CustomRegister(ModelForm):
         }
 
 
-class AddFrForm(ModelForm):
+class AddFriendForm(ModelForm):
     class Meta:
         model = Friend
         fields = ['name', 'character', 'date_birth', 'date_begin', 'photo']
@@ -69,15 +69,6 @@ class CreateEventForm(ModelForm):
             'points': Select(attrs={'class': 'form-control bg-light mt-2'}),
             'members': FilteredSelectMultiple(u'Участники', is_stacked=False),
         }
-
-        class Media:
-            css = {
-                'all': (
-                    '/static/admin/css/widgets.css',
-                    '/static/css/widgets.css',
-                )
-            }
-            js = ('/admin/jquery.js', '/admin/jsi18n/')
 
     def __init__(self, *args, **kwargs):
         current_user = kwargs.pop('current_user', None)
