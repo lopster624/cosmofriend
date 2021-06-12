@@ -1,6 +1,5 @@
 import datetime
 import uuid
-
 import requests
 import vk
 from django.contrib import auth
