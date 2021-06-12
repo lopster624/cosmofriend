@@ -6,6 +6,14 @@ from cosmos.models import Event, Friend, Photo, Video
 
 
 def get_statistic(request, start_date=None, end_date=None, all_the_time=None):
+    """
+    Функция получения статистики количества событий за педиод со всеми друзьями
+    :param request: объект запроса
+    :param start_date: начальная дата периода включительно
+    :param end_date: конечная дата периода включительно
+    :param all_the_time: нужно ли смотреть статистику за все время
+    :return: отсортированный лист по убыванию количества событий кортежей формата (Friend, <количество событий за период>)
+    """
     if not all_the_time:
         if type(start_date) is str or type(end_date) is str:
             try:
@@ -26,6 +34,12 @@ def get_statistic(request, start_date=None, end_date=None, all_the_time=None):
 
 
 def save_files(request, new_event):
+    """
+    Функция сохранения файлов  спривязкой к событию
+    :param request: объект запроса
+    :param new_event: событие, к которому привязываются фото и видео
+    :return:
+    """
     if not request.FILES:
         return
     for f in request.FILES.getlist('images'):
@@ -35,5 +49,5 @@ def save_files(request, new_event):
         if file_format:
             video = Video(event=new_event, video=v)
             video.save()
-            video.title = video.video.name.split('/')[-1]
+            video.title = video.video.name.split('/')[-1]  # отделяется название от пути загрузки
             video.save()

@@ -23,8 +23,8 @@ class HomeView(LoginRequiredMixin, View):
                                     start_date=datetime.date.today().replace(day=1))
         if len(top_friends) > 3:
             top_friends = top_friends[:3]
-        future_events = Event.objects.filter(date__gt=datetime.date.today()).reverse()
-        today_events = Event.objects.filter(date__exact=datetime.date.today())
+        future_events = Event.objects.filter(user=request.user, date__gt=datetime.date.today()).reverse()
+        today_events = Event.objects.filter(user=request.user, date__exact=datetime.date.today())
         return render(request, 'cosmos/home.html',
                       context={'stat_list': top_friends, 'future_events': future_events, 'today_events': today_events,
                                'short': True, 'today': datetime.date.today()})
@@ -258,6 +258,13 @@ class StatisticView(LoginRequiredMixin, View):
         return render(request, 'cosmos/stats.html', context={'stat_list': stat_list, 'period': 30})
 
     def post(self, request):
+        """
+        Возвращает рендер страницы с статистикой количества событий за период
+        :param request: объект запроса
+        Также неявно передаваемый параметр period. 0 - все время, 1 - произвольный, передается в POST,
+        остальные значения - количество последних дней.
+        :return: render страницы с контекстом
+        """
         period = int(request.POST.get('btnradio', None))
         start_date, end_date, error = '', '', ''
         if period == 0:

@@ -74,4 +74,5 @@ class CreateEventForm(ModelForm):
         current_user = kwargs.pop('current_user', None)
         super(CreateEventForm, self).__init__(*args, **kwargs)
         if current_user:
+            # добавляет в выбор участников друзей только данного пользователя
             self.fields['members'].queryset = Friend.objects.filter(user=current_user)
